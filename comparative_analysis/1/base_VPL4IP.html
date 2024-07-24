@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Blockly</title>
+    <title>Base VPL4IP</title>
     <!-- Load Blockly core -->
     <script src="https://unpkg.com/blockly/blockly_compressed.js"></script>
     <!-- Load the default blocks -->
@@ -41,8 +41,7 @@
         padding: 10px;
         box-sizing: border-box;
       }
-    </style>
-    <style>
+
       #Control {
         display: flex;
         align-items: center;
@@ -87,90 +86,9 @@
       </button>
     </div>
     <div id="blocklyDiv"></div>
+    <h2>Python Code Generated from the workflow above</h5>
     <pre id="codeArea"></pre>
 
-    <script>
-      function loadWorkspace(state) {
-        var workspace = Blockly.getMainWorkspace();
-        var savedState =
-          '{"blocks":{"languageVersion":0,"blocks":[{"type":"optic_disc_annotation","id":"9/:2hOyx[1rDZhfzBS|n","x":73,"y":6,"fields":{"Y":650,"X":210,"radius":160,"width":10},"inputs":{"IMAGE":{"block":{"type":"numpy_to_pil","id":"5LuareXv|[oFcj:!owVU","inputs":{"ARRAY":{"block":{"type":"float_to_uint8","id":"u1u@i}s/D?=gKLcP7zc{","fields":{"normalized?":true},"inputs":{"IMAGE":{"block":{"type":"gray_to_rgb","id":"OTQ]@jFDriGOx]Qr~!8W","inputs":{"IMAGE":{"block":{"type":"sato_filter","id":"xjl#rmFNx]x(Nx-F9;RY","fields":{"SIGMAS":"range(1, 10, 2)","BLACK_RIDGES":true},"inputs":{"IMAGE":{"block":{"type":"bgr_to_gray","id":"SXM~7=9o!s!*3ku=L3v{","inputs":{"IMAGE":{"block":{"type":"fastNlMeansDenoisingColored","id":",1p|iJ($YJ,V[a[bsh3l","fields":{"H":10,"HCOLOR":10,"TEMPLATEWINDOWSIZE":7,"SEARCHWINDOWSIZE":21},"inputs":{"SRC":{"block":{"type":"read_image","id":"kX?AY,x]D^LJ{ri)-(lx","fields":{"IMAGE_PATH":"image.png","AS_GRAY":false}}}}}}}}}}}}}}}}}}}}}}}]}}';
-        Blockly.serialization.workspaces.load(
-          JSON.parse(savedState),
-          workspace
-        );
-        workspace.zoomToFit();
-      }
-
-      function logWorkspace() {
-        var workspace = Blockly.getMainWorkspace();
-        const state = Blockly.serialization.workspaces.save(workspace);
-        console.log(JSON.stringify(state));
-      }
-
-      function updateScaleInput(scaleValue) {
-        document.getElementById("scaleInput").value = scaleValue.toFixed(2);
-      }
-
-      function downloadWorkspaceSVG() {
-        var svg = document.getElementsByClassName("blocklySvg")[0]; // Get the SVG element
-        var styleElement = document.createElementNS(
-          "http://www.w3.org/2000/svg",
-          "style"
-        );
-        styleElement.textContent = `.blocklyText { fill: #fff; }
-                                  .blocklyEditableText>text { fill: #000; }
-                                  .blocklyText.blocklyDropdownText { fill: #000; }
-                                  .blocklyEditableText > rect {
-                                      fill: #fff;
-                                      fill-opacity: 0.6;
-                                      stroke: none;
-                                  }
-                                  .blocklyPathLight {    
-                                    fill: none;
-                                    stroke-linecap: round;
-                                    stroke-width: 1;
-                                  }`;
-        svg.appendChild(styleElement);
-
-        var serializer = new XMLSerializer();
-        var source = serializer.serializeToString(svg);
-
-        //add name spaces.
-        if (
-          !source.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)
-        ) {
-          source = source.replace(
-            /^<svg/,
-            '<svg xmlns="http://www.w3.org/2000/svg"'
-          );
-        }
-        if (!source.match(/^<svg[^>]+"http\:\/\/www\.w3\.org\/1999\/xlink"/)) {
-          source = source.replace(
-            /^<svg/,
-            '<svg xmlns:xlink="http://www.w3.org/1999/xlink"'
-          );
-        }
-
-        // Add xml declaration
-        source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
-
-        // Convert SVG source to URI data scheme.
-        var url =
-          "data:image/svg+xml;charset=utf-8," + encodeURIComponent(source);
-
-        // Set up download link
-        var link = document.createElement("a");
-        link.href = url;
-        link.download = "blockly_workspace.svg";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
-
-      window.onload = function () {
-        loadWorkspace();
-      };
-    </script>
     <script>
       Blockly.defineBlocksWithJsonArray([
         {
@@ -415,7 +333,6 @@
               min: 1,
             },
           ],
-
           inputsInline: false,
           output: "Image",
           colour: 20,
@@ -427,7 +344,7 @@
 
       var requiredImports = new Set();
 
-      Blockly.Python["read_image"] = function (block) {
+      Blockly.Python.forBlock["read_image"] = function (block) {
         requiredImports.add("import cv2");
         var imageUrl = Blockly.Python.quote_(block.getFieldValue("IMAGE_PATH"));
         var asGray = block.getFieldValue("AS_GRAY") === "TRUE";
@@ -439,11 +356,8 @@
           return [code, Blockly.Python.ORDER_NONE];
         }
       };
-      // Blockly.Blocks["read_image"].init = function () {
 
-      //   this.setCollapsible(true);
-      // };
-      Blockly.Python["fastNlMeansDenoisingColored"] = function (block) {
+      Blockly.Python.forBlock["fastNlMeansDenoisingColored"] = function (block) {
         requiredImports.add("import cv2");
         var src =
           Blockly.Python.valueToCode(block, "SRC", Blockly.Python.ORDER_NONE) ||
@@ -476,7 +390,7 @@
         return [`${resultVar}`, Blockly.Python.ORDER_NONE];
       };
 
-      Blockly.Python["bgr_to_gray"] = function (block) {
+      Blockly.Python.forBlock["bgr_to_gray"] = function (block) {
         requiredImports.add("import cv2");
         var image = Blockly.Python.valueToCode(
           block,
@@ -487,7 +401,7 @@
         return [code, Blockly.Python.ORDER_NONE];
       };
 
-      Blockly.Python["sato_filter"] = function (block) {
+      Blockly.Python.forBlock["sato_filter"] = function (block) {
         requiredImports.add("from skimage.filters import sato");
         var image = Blockly.Python.valueToCode(
           block,
@@ -507,7 +421,7 @@
         return [`${resultVar}`, Blockly.Python.ORDER_NONE];
       };
 
-      Blockly.Python["gray_to_rgb"] = function (block) {
+      Blockly.Python.forBlock["gray_to_rgb"] = function (block) {
         requiredImports.add("from skimage.color import gray2rgb");
         var image = Blockly.Python.valueToCode(
           block,
@@ -518,7 +432,7 @@
         return [code, Blockly.Python.ORDER_NONE];
       };
 
-      Blockly.Python["float_to_uint8"] = function (block) {
+      Blockly.Python.forBlock["float_to_uint8"] = function (block) {
         requiredImports.add("from skimage.util import img_as_ubyte");
         var image =
           Blockly.Python.valueToCode(
@@ -544,7 +458,7 @@
         }
       };
 
-      Blockly.Python["numpy_to_pil"] = function (block) {
+      Blockly.Python.forBlock["numpy_to_pil"] = function (block) {
         requiredImports.add("from PIL import Image");
         var array =
           Blockly.Python.valueToCode(
@@ -557,7 +471,7 @@
         return [code, Blockly.Python.ORDER_NONE];
       };
 
-      Blockly.Python["optic_disc_annotation"] = function (block) {
+      Blockly.Python.forBlock["optic_disc_annotation"] = function (block) {
         var image =
           Blockly.Python.valueToCode(
             block,
@@ -569,8 +483,6 @@
         var posY = block.getFieldValue("Y");
         var radius = block.getFieldValue("radius") || "10";
         var width = block.getFieldValue("width") || "3";
-        var color =
-          Blockly.Python.quote_(block.getFieldValue("COLOR")) || "'#ff0000'";
         requiredImports.add("from PIL import ImageDraw");
         var resultVar = Blockly.Python.nameDB_.getDistinctName(
           "pil_image",
@@ -579,9 +491,10 @@
         var code =
           `${resultVar} = ${image}\n` +
           `draw = ImageDraw.Draw(${resultVar})\n` +
-          `draw.ellipse([(${posX} - ${radius}, ${posY} - ${radius}), (${posX} + ${radius}, ${posY} + ${radius})], outline='red', width=${width})`;
+          `draw.ellipse([(${posX - radius}, ${posY - radius}), (${posX + radius}, ${posY + radius})], outline='red', width=${width})`;
         Blockly.Python.definitions_["define_" + resultVar] = code;
-        return [`${resultVar}`, Blockly.Python.ORDER_NONE];
+        return `${resultVar}`
+        return [`${resultVar}`, Blockly.Python.ORDER_COMMA];
       };
 
       function generateImports() {
@@ -617,6 +530,80 @@
         trashcan: true,
         rtl: true,
       });
+    </script>
+    <script>
+      function loadWorkspace(state) {
+        var workspace = Blockly.getMainWorkspace();
+        var savedState =
+          '{"blocks":{"languageVersion":0,"blocks":[{"type":"optic_disc_annotation","id":"9/:2hOyx[1rDZhfzBS|n","x":73,"y":6,"fields":{"Y":650,"X":210,"radius":160,"width":10},"inputs":{"IMAGE":{"block":{"type":"numpy_to_pil","id":"5LuareXv|[oFcj:!owVU","inputs":{"ARRAY":{"block":{"type":"float_to_uint8","id":"u1u@i}s/D?=gKLcP7zc{","fields":{"normalized?":true},"inputs":{"IMAGE":{"block":{"type":"gray_to_rgb","id":"OTQ]@jFDriGOx]Qr~!8W","inputs":{"IMAGE":{"block":{"type":"sato_filter","id":"xjl#rmFNx]x(Nx-F9;RY","fields":{"SIGMAS":"range(1, 10, 2)","BLACK_RIDGES":true},"inputs":{"IMAGE":{"block":{"type":"bgr_to_gray","id":"SXM~7=9o!s!*3ku=L3v{","inputs":{"IMAGE":{"block":{"type":"fastNlMeansDenoisingColored","id":",1p|iJ($YJ,V[a[bsh3l","fields":{"H":10,"HCOLOR":10,"TEMPLATEWINDOWSIZE":7,"SEARCHWINDOWSIZE":21},"inputs":{"SRC":{"block":{"type":"read_image","id":"kX?AY,x]D^LJ{ri)-(lx","fields":{"IMAGE_PATH":"retinal.jpg","AS_GRAY":false}}}}}}}}}}}}}}}}}}}}}}}]}}';
+        Blockly.serialization.workspaces.load(
+          JSON.parse(savedState),
+          workspace
+        );
+        workspace.zoomToFit();
+      }
+
+      function logWorkspace() {
+        var workspace = Blockly.getMainWorkspace();
+        const state = Blockly.serialization.workspaces.save(workspace);
+        console.log(JSON.stringify(state));
+      }
+
+      function downloadWorkspaceSVG() {
+        var svg = document.getElementsByClassName("blocklySvg")[0]; // Get the SVG element
+        var styleElement = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "style"
+        );
+        styleElement.textContent = `.blocklyText { fill: #fff; }
+                                  .blocklyEditableText>text { fill: #000; }
+                                  .blocklyText.blocklyDropdownText { fill: #000; }
+                                  .blocklyEditableText > rect {
+                                      fill: #fff;
+                                      fill-opacity: 0.6;
+                                      stroke: none;
+                                  }
+                                  .blocklyPathLight {    
+                                    fill: none;
+                                    stroke-linecap: round;
+                                    stroke-width: 1;
+                                  }`;
+        svg.appendChild(styleElement);
+
+        var serializer = new XMLSerializer();
+        var source = serializer.serializeToString(svg);
+
+        //add name spaces.
+        if (
+          !source.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)
+        ) {
+          source = source.replace(
+            /^<svg/,
+            '<svg xmlns="http://www.w3.org/2000/svg"'
+          );
+        }
+        if (!source.match(/^<svg[^>]+"http\:\/\/www\.w3\.org\/1999\/xlink"/)) {
+          source = source.replace(
+            /^<svg/,
+            '<svg xmlns:xlink="http://www.w3.org/1999/xlink"'
+          );
+        }
+
+        // Add xml declaration
+        source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
+
+        // Convert SVG source to URI data scheme.
+        var url =
+          "data:image/svg+xml;charset=utf-8," + encodeURIComponent(source);
+
+        // Set up download link
+        var link = document.createElement("a");
+        link.href = url;
+        link.download = "blockly_workspace.svg";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
 
       function updateCode() {
         var imports = generateImports();
@@ -625,8 +612,11 @@
       }
 
       workspace.addChangeListener(updateCode);
-
-      updateCode();
+      
+      window.onload = function () {
+        loadWorkspace();
+        updateCode();
+      };
     </script>
   </body>
 </html>
