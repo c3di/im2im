@@ -40,3 +40,17 @@ def decode_metadata(metadata_str: str) -> dict:
     metadata = {k: v for k, v in zip(list(Metadata.__annotations__.keys()), metadata_list)}
     metadata['minibatch_input'] = True if metadata['minibatch_input'] == 'True' else False
     return metadata
+
+
+def are_both_same_data_repr(metadata_a, metadata_b, data_repr):
+    return metadata_a.get('data_representation') == data_repr and metadata_b.get('data_representation') == data_repr
+
+
+def is_differ_value_for_key(metadata_a, metadata_b, key):
+    return metadata_a[key] != metadata_b[key]
+
+
+def is_metadata_complete(instance: dict) -> bool:
+    required_keys = set(Metadata.__annotations__.keys())
+    instance_keys = set(instance.keys())
+    return required_keys.issubset(instance_keys)

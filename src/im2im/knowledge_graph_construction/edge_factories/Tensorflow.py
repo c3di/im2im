@@ -1,5 +1,5 @@
 from .type import Conversion, FactoriesCluster
-from ...util import are_both_same_data_repr, is_differ_value_for_key
+from ..metedata import are_both_same_data_repr, is_differ_value_for_key
 
 
 def is_attribute_value_valid_for_tensorflow(metadata):

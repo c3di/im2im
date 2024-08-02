@@ -1,4 +1,4 @@
-from src.im2im import are_both_same_data_repr, is_differ_value_for_key
+from src.im2im.knowledge_graph_construction import are_both_same_data_repr, is_differ_value_for_key, is_metadata_complete
 from src.im2im.util import extract_func_body, func_obj_to_str, exclude_key_from_list
 
 
