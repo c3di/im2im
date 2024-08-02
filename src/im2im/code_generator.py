@@ -1,8 +1,6 @@
-import math
 from typing import Union
 from .util import extract_func_body
 from .knowledge_graph_construction import encode_metadata, Metadata
-from .time_cost_measure import time_cost_in_kg
 
 
 class ConvertCodeGenerator:
@@ -14,19 +12,9 @@ class ConvertCodeGenerator:
         self._gpu_penalty = 0
         self._normalize_time_cost = lambda u, v: 0
 
-    def config_astar_goal_function(self, cpu_penalty: float, gpu_penalty: float,
-                                   include_time_cost: bool = False, test_img_size=(256, 256)):
+    def config_astar_goal_function(self, cpu_penalty: float, gpu_penalty: float):
         self._cpu_penalty = cpu_penalty
         self._gpu_penalty = gpu_penalty
-        if include_time_cost:
-            all_time_cost = time_cost_in_kg(self.knowledge_graph, test_img_size)
-            max_time_cost = max(time_cost for time_cost in all_time_cost.values() if time_cost < math.inf)
-            if max_time_cost == 0:
-                self._normalize_time_cost = lambda u, v: 0
-            else:
-                self._normalize_time_cost = lambda u, v: round(all_time_cost.get((u, v), math.inf) / max_time_cost, 3)
-        else:
-            self._normalize_time_cost = lambda u, v: 0
 
     @property
     def knowledge_graph(self):

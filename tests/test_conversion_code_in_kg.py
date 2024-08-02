@@ -4,7 +4,7 @@ import pytest
 import tensorflow as tf
 import torch
 
-from src.im2im import is_image_equal, random_test_image_and_expected
+from .image_util import is_image_equal, random_test_image_and_expected
 from src.im2im.code_generator import ConvertCodeGenerator
 from src.im2im.knowledge_graph_construction import get_knowledge_graph_constructor
 
