@@ -1,5 +1,6 @@
 from importlib.metadata import PackageNotFoundError, version
 
+from .api import _code_generator, _constructor, preset_table
 from .api import *
 from .util import *
 from .knowledge_graph_construction import find_closest_metadata

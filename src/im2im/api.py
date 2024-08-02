@@ -6,7 +6,7 @@ from .knowledge_graph_construction import (
     get_knowledge_graph_constructor,
     MetadataValues,
     FactoriesCluster,
-    ConversionForMetadataPair, Metadata,
+    ConversionForMetadataPair, Metadata, is_metadata_complete,
 )
 
 _constructor = get_knowledge_graph_constructor()
@@ -15,9 +15,26 @@ preset_table = get_preset_table()
 
 
 class Image:
-    def __init__(self, raw_image, metadata: Metadata):
+    def __init__(self, raw_image, config: Metadata | str):
         self.raw_image = raw_image
-        self.metadata = metadata
+        self._init_metadata(config)
+
+    def _init_metadata(self, config: Metadata | str):
+        """
+        Args:
+            config: Metadata | str: If str, it should be a preset path ("lib.preset"). If Metadata, it should be a complete metadata.
+        """
+        hint_msg = (f" Please provide complete metadata including 'data_representation', 'color_channel',"
+                    f" 'channel_order', 'minibatch_input', 'image_data_type', 'device'.")
+        if isinstance(config, str):
+            metadata = get_predefined_metadata(config)
+            if not is_metadata_complete(metadata):
+                raise Exception(f"Metadata {metadata} got using the preset for {config} is not complete." + hint_msg)
+            self.metadata = metadata
+        else:
+            if not is_metadata_complete(config):
+                raise Exception(f"Provided metadata {config} is not complete. " + hint_msg)
+            self.metadata = config
 
 
 def im2im(source_image: Image, target_preset_path) -> Image:
@@ -25,10 +42,11 @@ def im2im(source_image: Image, target_preset_path) -> Image:
     if source_image.metadata == target_metadata:
         return source_image
 
+    raw_image = source_image.raw_image
     target_image_name = "target_image"
-    code_str = im2im_code("source_image", source_image.metadata, target_image_name, target_metadata)
+    code_str = im2im_code("raw_image", source_image.metadata, target_image_name, target_metadata)
     exec(code_str)
-    return locals()[target_image_name]
+    return Image(locals()[target_image_name], target_metadata)
 
 
 def im2im_code(source_var_name: str, source_metadata: Metadata, target_var_name: str, target_metadata: Metadata) -> Union[str, None]:
@@ -43,6 +61,14 @@ def new_metadata(base_metadata: Metadata, **changed_attributes) -> Metadata:
     new = base_metadata.copy()
     new.update(changed_attributes)
     return new
+
+
+def get_predefined_metadata(preset: str) -> Metadata:
+    return get_preset_table().get_metadata(preset)
+
+
+def add_lib_metadata(lib: str, metadata: Metadata4Library):
+    preset_table.add_metadata4library(lib, metadata)
 
 
 def config_astar_goal_function(cpu_penalty: float, gpu_penalty: float):
@@ -68,7 +94,3 @@ def add_conversion_for_metadata_pairs(
 ):
     new_knowledge_graph = _constructor.add_conversion_for_metadata_pairs(pairs)
     _code_generator.knowledge_graph = new_knowledge_graph
-
-
-def add_lib_metadata(lib: str, metadata: Metadata4Library):
-    preset_table.add_metadata4library(lib, metadata)

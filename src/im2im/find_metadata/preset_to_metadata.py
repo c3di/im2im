@@ -4,11 +4,10 @@ from ..knowledge_graph_construction import Metadata
 
 
 class Metadata4Library:
-    metadata: Metadata = None
-    preset_with_override_metadata: Dict[str, Metadata] = {}
 
     def __init__(self, metadata):
         self.metadata = metadata
+        self.preset_with_override_metadata: Dict[str, Metadata] = {}
 
     def add_preset_with_override_metadata(self, preset, metadata):
         self.preset_with_override_metadata[preset] = metadata

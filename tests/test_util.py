@@ -124,3 +124,27 @@ def test_is_differ_value_for_key_false():
     metadata_b = {'key1': 'value1', 'key2': 'value2'}
     assert not is_differ_value_for_key(metadata_a, metadata_b, 'key1'), \
         "Should return False when there are no differences, even for the specified key"
+
+
+def test_is_metadata_complete_with_complete_metadata():
+    metadata_instance = {
+        "data_representation": "numpy.ndarray",
+        "color_channel": "bgr",
+        "channel_order": "channel last",
+        "minibatch_input": False,
+        "image_data_type": "uint8",
+        "device": "cpu"
+    }
+    assert is_metadata_complete(metadata_instance)
+
+
+def test_is_metadata_complete_with_incomplete_metadata():
+    metadata_instance = {
+        "data_representation": "numpy.ndarray",
+        "color_channel": "bgr",
+        "channel_order": "channel last",
+        "minibatch_input": False,
+        "image_data_type": "uint8"
+        # "device" key is missing
+    }
+    assert not is_metadata_complete(metadata_instance)

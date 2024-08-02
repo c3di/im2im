@@ -131,7 +131,7 @@ class KnowledgeGraphConstructor:
         self, pairs: Union[List[ConversionForMetadataPair], ConversionForMetadataPair]
     ):
         if pairs is None or (isinstance(pairs, list) and len(pairs) == 0):
-            return
+            return self.knowledge_graph
         self._create_edges_from_manual_annotation(
             pairs if isinstance(pairs, list) else [pairs]
         )
