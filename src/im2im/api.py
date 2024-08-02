@@ -1,0 +1,74 @@
+from typing import List, Union
+
+from .find_metadata import find_target_metadata, Metadata4Library, get_preset_table
+from .code_generator import ConvertCodeGenerator
+from .knowledge_graph_construction import (
+    get_knowledge_graph_constructor,
+    MetadataValues,
+    FactoriesCluster,
+    ConversionForMetadataPair, Metadata,
+)
+
+_constructor = get_knowledge_graph_constructor()
+_code_generator = ConvertCodeGenerator(_constructor.knowledge_graph)
+preset_table = get_preset_table()
+
+
+class Image:
+    def __init__(self, raw_image, metadata: Metadata):
+        self.raw_image = raw_image
+        self.metadata = metadata
+
+
+def im2im(source_image: Image, target_preset_path) -> Image:
+    target_metadata = find_target_metadata(source_image.metadata, target_preset_path)
+    if source_image.metadata == target_metadata:
+        return source_image
+
+    target_image_name = "target_image"
+    code_str = im2im_code("source_image", source_image.metadata, target_image_name, target_metadata)
+    exec(code_str)
+    return locals()[target_image_name]
+
+
+def im2im_code(source_var_name: str, source_metadata: Metadata, target_var_name: str, target_metadata: Metadata) -> Union[str, None]:
+    """
+    Generates Python code as a string that performs data conversion from a source variable to a target variable based on specified preset path.
+
+   """
+    return _code_generator.get_conversion(source_var_name, source_metadata, target_var_name, target_metadata)
+
+
+def new_metadata(base_metadata: Metadata, **changed_attributes) -> Metadata:
+    new = base_metadata.copy()
+    new.update(changed_attributes)
+    return new
+
+
+def config_astar_goal_function(cpu_penalty: float, gpu_penalty: float):
+    """
+    We use A* to find the shortest path in the knowledge graph. The goal function is only step cost by default.
+    You can use this function to set `cpu penalty`, `gpu penalty` to the goal function.
+    """
+    _code_generator.config_astar_goal_function(cpu_penalty, gpu_penalty)
+
+
+def add_meta_values_for_image(new_metadata: MetadataValues):
+    new_knowledge_graph = _constructor.add_metadata_values(new_metadata)
+    _code_generator.knowledge_graph = new_knowledge_graph
+
+
+def add_edge_factory_cluster(factory_cluster: FactoriesCluster):
+    new_knowledge_graph = _constructor.add_edge_factory_cluster(factory_cluster)
+    _code_generator.knowledge_graph = new_knowledge_graph
+
+
+def add_conversion_for_metadata_pairs(
+        pairs: Union[List[ConversionForMetadataPair], ConversionForMetadataPair]
+):
+    new_knowledge_graph = _constructor.add_conversion_for_metadata_pairs(pairs)
+    _code_generator.knowledge_graph = new_knowledge_graph
+
+
+def add_lib_metadata(lib: str, metadata: Metadata4Library):
+    preset_table.add_metadata4library(lib, metadata)

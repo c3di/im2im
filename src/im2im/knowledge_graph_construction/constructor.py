@@ -118,12 +118,14 @@ class KnowledgeGraphConstructor:
             self._metadata_values, [factory_cluster]
         )
         self.save_knowledge_graph()
+        return self.knowledge_graph
 
     def add_metadata_values(self, new_metadata: MetadataValues):
         self._create_edges_using_factories_clusters(
             new_metadata, self._edge_factories_clusters
         )
         self.save_knowledge_graph()
+        return self.knowledge_graph
 
     def add_conversion_for_metadata_pairs(
         self, pairs: Union[List[ConversionForMetadataPair], ConversionForMetadataPair]
@@ -134,3 +136,4 @@ class KnowledgeGraphConstructor:
             pairs if isinstance(pairs, list) else [pairs]
         )
         self.save_knowledge_graph()
+        return self.knowledge_graph
