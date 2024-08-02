@@ -101,8 +101,8 @@ def test_get_metadata_with_preset(opencv_lib, opencv_metadata):
 
 
 def test_preset_to_metadata_table(preset_table, opencv_metadata, skimage_metadata, pil_metadata):
-    assert preset_table.get_metadata("opencv", None) == opencv_metadata
-    assert preset_table.get_metadata("opencv", "gray") == {
+    assert preset_table.get_metadata("opencv") == opencv_metadata
+    assert preset_table.get_metadata("opencv.gray") == {
         "data_representation": "numpy.ndarray",
         "color_channel": "gray",
         "channel_order": "none",
@@ -110,8 +110,8 @@ def test_preset_to_metadata_table(preset_table, opencv_metadata, skimage_metadat
         "image_data_type": "uint8",
         "device": "cpu"
     }
-    assert preset_table.get_metadata("ski", None) == skimage_metadata
-    assert preset_table.get_metadata("pil", None) == pil_metadata
+    assert preset_table.get_metadata("ski") == skimage_metadata
+    assert preset_table.get_metadata("pil") == pil_metadata
 
 
 def test_find_target_metadata():
@@ -129,8 +129,5 @@ def test_find_target_metadata():
         "channel_order": "none"
     })
 
-    result_metadata = find_target_metadata(source_metadata, "ski.gray")
+    result_metadata = find_target_metadata(source_metadata, "skimage.gray")
     assert result_metadata == expected_metadata
-
-
-

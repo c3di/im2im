@@ -28,10 +28,15 @@ class PresetToMetadataTable:
     def add_lib_metadata(self, lib: str, metadata: Metadata4Library):
         self.presets[lib] = metadata
 
-    def get_metadata(self, lib: str, preset: str | None) -> Metadata:
+    def get_metadata(self, path) -> Metadata:
+        if "." in path:
+            lib, path = path.split(".")
+        else:
+            lib = path
+            path = None
         if lib not in self.presets:
             raise Exception(f"No metadata available for {lib}")
-        return self.presets[lib].get_metadata(preset)
+        return self.presets[lib].get_metadata(path)
 
 
 preset_table = PresetToMetadataTable()
