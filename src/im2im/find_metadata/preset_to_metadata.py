@@ -17,7 +17,8 @@ class Metadata4Library:
         if preset not in self.preset_with_override_metadata:
             return self.metadata
         final_metadata = self.metadata.copy()
-        return final_metadata.update(self.preset_with_override_metadata[preset])
+        final_metadata.update(self.preset_with_override_metadata[preset])
+        return final_metadata
 
 
 class PresetToMetadataTable:
@@ -26,11 +27,6 @@ class PresetToMetadataTable:
 
     def add_lib_metadata(self, lib: str, metadata: Metadata4Library):
         self.presets[lib] = metadata
-
-    # def add_metadata_in_lib(self, lib: str, preset: str, metadata: Metadata):
-    #     if lib not in self.presets:
-    #         raise Exception(f"Library '{lib}' not found in presets")
-    #     self.presets[lib].add_preset_with_override_metadata(preset, metadata)
 
     def get_metadata(self, lib: str, preset: str | None) -> Metadata:
         if lib not in self.presets:
