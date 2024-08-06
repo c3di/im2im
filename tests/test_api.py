@@ -23,7 +23,7 @@ def test_im2im():
 
 def test_get_conversion_code():
     source = get_predefined_metadata("numpy.rgb_uint8")
-    target = get_predefined_metadata("torch")
+    target = get_predefined_metadata("torch.rgb")
 
     actual_code = im2im_code("source_image", source, "target_image", target)
     expected_code = ('import torch\n'
