@@ -299,6 +299,18 @@ def image_data_to_int16_full_range(source_metadata, target_metadata) -> Conversi
         return "import skimage as ski", "def convert(var):\n return ski.util.img_as_int(var)",
 
 
+def convert_image_dtype_float_to_uint8(source_metadata, target_metadata) -> Conversion:
+    if (
+            source_metadata.get("image_data_type") in ["float32", "float64", "double"]
+            and target_metadata.get("image_data_type") == "uint8"
+    ):
+        return (
+            "import numpy as np", "def convert(var):\n return var.astype(np.uint8)",
+        )
+    else:
+        print("source_metadata", source_metadata)
+
+
 dtype_float_mapping = {
     "float32": "np.float32",
     "float64": "np.float64",
@@ -399,6 +411,7 @@ factories_cluster_for_numpy: FactoriesCluster = (
         image_data_to_uint8_full_range,
         image_data_to_uint16_full_range,
         image_data_to_int16_full_range,
+        convert_image_dtype_float_to_uint8,
         convert_image_dtype_float_to_float,
         image_data_unsigned_integer_to_float32_0_to_1,
         image_data_integer_to_float32_minus1_to_1,
