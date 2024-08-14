@@ -41,7 +41,7 @@ For other APIs like `im2im_code`, please refer to [public APIs](https://github.c
 ## Evaluation
 
 **Comparative Analysis**
-The effectiveness and benefits for VPL4IPs are validated through Comparative Analysis](https://github.com/c3di/im2im/blob/main/comparative_analysis).
+The effectiveness and benefits for VPL4IPs are validated through [Comparative Analysis](https://github.com/c3di/im2im/blob/main/comparative_analysis).
 
 **Accuracy**
 All conversion code snippets are thoroughly verified through [execution checks](https://github.com/c3di/im2im/blob/main/tests/test_conversion_code_in_kg.py) to ensure their correctness.
