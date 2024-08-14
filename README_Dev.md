@@ -14,6 +14,10 @@ With your Python virtual environment active, choose the appropriate file—eithe
 pip install -r path/to/requirements.txt
 ```
 
+## Knowledge Graph Extension
+
+Our package is designed for easy knowledge graph extension. Once you are familiar with the mechanisms behind the construction of the knowledge graph, you can leverage a suite of functions designed for various extension requirements including `add_meta_values_for_image`, `add_edge_factory_cluster`, and `add_conversion_for_metadata_pairs`, each tailored for different extension needs. 
+
 ## Run Tests
 
 Navigate to the root directory and run the tests in the tests folder using the following command:
