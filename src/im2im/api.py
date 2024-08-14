@@ -57,12 +57,6 @@ def im2im_code(source_var_name: str, source_metadata: Metadata, target_var_name:
     return _code_generator.get_conversion(source_var_name, source_metadata, target_var_name, target_metadata)
 
 
-def new_metadata(base_metadata: Metadata, **changed_attributes) -> Metadata:
-    new = base_metadata.copy()
-    new.update(changed_attributes)
-    return new
-
-
 def get_possible_metadata(preset: str) -> PossibleMetadata:
     return get_preset_table().get_possible_metadata(preset)
 
