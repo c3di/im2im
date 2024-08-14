@@ -5,7 +5,7 @@ import pytest
 import torch
 
 from src.im2im import add_conversion_for_metadata_pairs, _code_generator, _constructor, \
-    im2im_code, im2im, Image, get_predefined_metadata
+    im2im_code, im2im, Image, get_possible_metadata, find_target_metadata
 from src.im2im.code_generator import ConvertCodeGenerator
 from src.im2im.knowledge_graph_construction import KnowledgeGraph
 
@@ -16,14 +16,13 @@ def test_im2im():
     actual_image = im2im(source_image, "torch")
     expected_image = (torch.from_numpy(source_image.raw_image).permute(2, 0, 1).unsqueeze(0)) / 255
 
-    assert actual_image.metadata == get_predefined_metadata("torch")
     assert torch.allclose(actual_image.raw_image, expected_image), \
         f"expected {expected_image} but got {actual_image}"
 
 
 def test_get_conversion_code():
-    source = get_predefined_metadata("numpy.rgb_uint8")
-    target = get_predefined_metadata("torch.rgb")
+    source = get_possible_metadata("numpy.rgb_uint8")
+    target = find_target_metadata(source, "torch.rgb")
 
     actual_code = im2im_code("source_image", source, "target_image", target)
     expected_code = ('import torch\n'

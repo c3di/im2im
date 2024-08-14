@@ -1,6 +1,7 @@
 import pytest
 
-from src.im2im.find_metadata import Metadata4Library, PresetToMetadataTable, find_target_metadata
+from src.im2im.find_metadata import Metadata4Library, PresetToMetadataTable, find_target_metadata, get_default_metadata, \
+    find_closest_match
 from src.im2im.knowledge_graph_construction import Metadata
 
 
@@ -80,7 +81,7 @@ def test_add_preset_with_override_metadata(opencv_lib):
     })
     opencv_lib.add_preset_with_override_metadata("new_gray", override_metadata)
     assert opencv_lib.preset_with_override_metadata["new_gray"] == override_metadata
-    assert opencv_lib.get_metadata("new_gray") == {
+    assert opencv_lib.get_possible_metadata("new_gray") == {
         "data_representation": "numpy.ndarray",
         "color_channel": "gray",
         "channel_order": "none",
@@ -91,18 +92,18 @@ def test_add_preset_with_override_metadata(opencv_lib):
 
 
 def test_get_metadata_without_preset(opencv_lib, opencv_metadata):
-    assert opencv_lib.get_metadata(None) == opencv_metadata
+    assert opencv_lib.get_possible_metadata(None) == opencv_metadata
 
 
 def test_get_metadata_with_preset(opencv_lib, opencv_metadata):
     final_metadata = opencv_metadata.copy()
     final_metadata.update({"color_channel": "gray", "channel_order": "none"})
-    assert opencv_lib.get_metadata("gray") == final_metadata
+    assert opencv_lib.get_possible_metadata("gray") == final_metadata
 
 
 def test_preset_to_metadata_table(preset_table, opencv_metadata, skimage_metadata, pil_metadata):
-    assert preset_table.get_metadata("opencv") == opencv_metadata
-    assert preset_table.get_metadata("opencv.gray") == {
+    assert preset_table.get_possible_metadata("opencv") == opencv_metadata
+    assert preset_table.get_possible_metadata("opencv.gray") == {
         "data_representation": "numpy.ndarray",
         "color_channel": "gray",
         "channel_order": "none",
@@ -110,8 +111,8 @@ def test_preset_to_metadata_table(preset_table, opencv_metadata, skimage_metadat
         "image_data_type": "uint8",
         "device": "cpu"
     }
-    assert preset_table.get_metadata("ski") == skimage_metadata
-    assert preset_table.get_metadata("pil") == pil_metadata
+    assert preset_table.get_possible_metadata("ski") == skimage_metadata
+    assert preset_table.get_possible_metadata("pil") == pil_metadata
 
 
 def test_find_target_metadata():
@@ -131,3 +132,22 @@ def test_find_target_metadata():
 
     result_metadata = find_target_metadata(source_metadata, "skimage.gray")
     assert result_metadata == expected_metadata
+
+
+def test_get_default_metadata(skimage_metadata):
+    input_metadata = skimage_metadata.copy()
+    input_metadata["color_channel"] = ["rgb", "gray"]
+
+    result_metadata = get_default_metadata(input_metadata)
+    assert result_metadata == skimage_metadata
+
+
+def test_find_closest_match(skimage_metadata):
+    input_metadata = skimage_metadata.copy()
+    input_metadata["color_channel"] = ["rgb", "gray"]
+    input_metadata["channel_order"] = "channel first"
+
+    result_metadata = find_closest_match(input_metadata, skimage_metadata)
+    skimage_metadata["channel_order"] = "channel first"
+
+    assert result_metadata == skimage_metadata

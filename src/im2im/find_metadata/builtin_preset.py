@@ -9,28 +9,35 @@ opencv_lib.add_preset_with_override_metadata("gray", {"color_channel": "gray", "
 preset_table.add_lib_metadata("opencv", opencv_lib)
 
 skimage_lib = Metadata4Library(
-    {"data_representation": "numpy.ndarray", "minibatch_input": False, "device": "cpu"})
+    {"data_representation": "numpy.ndarray", "minibatch_input": False, "device": "cpu",
+     "image_data_type": ["uint8", "uint16", "uint32", "int8", "int16", "int32", "float32", "float64", "double",
+                         "float32(0to1)", "float32(-1to1)", "float64(0to1)", "float64(-1to1)", "double(0to1)",
+                         "double(-1to1)",
+                         ], })
 skimage_lib.add_preset_with_override_metadata("rgb", {"color_channel": "rgb", "channel_order": "channel last"})
 skimage_lib.add_preset_with_override_metadata("gray", {"color_channel": "gray", "channel_order": "none"})
 preset_table.add_lib_metadata("skimage", skimage_lib)
 
 pil_lib = Metadata4Library(
-    {"data_representation": "PIL.Image", "minibatch_input": False, "device": "cpu"})
-pil_lib.add_preset_with_override_metadata("rgb_uint8", {"color_channel": "rgb", "channel_order": "channel last", "image_data_type": "uint8"})
+    {"data_representation": "PIL.Image", "minibatch_input": False, "image_data_type": "uint8", "device": "cpu"})
+pil_lib.add_preset_with_override_metadata("rgb_uint8", {"color_channel": "rgb", "channel_order": "channel last"})
 preset_table.add_lib_metadata("pil", pil_lib)
 
-
 torch_lib = Metadata4Library(
-    {"data_representation": "torch.tensor", "channel_order": "channel first", "minibatch_input": True, "image_data_type": "float32(0to1)"})
-torch_lib.add_preset_with_override_metadata("rgb", {"color_channel": "rgb", "device": "cpu"})
-torch_lib.add_preset_with_override_metadata("rgb_gpu", {"color_channel": "rgb", "device": "gpu"})
-torch_lib.add_preset_with_override_metadata("gray", {"color_channel": "gray", "device": "cpu"})
-torch_lib.add_preset_with_override_metadata("gray_gpu", {"color_channel": "gray", "device": "gpu"})
+    {"data_representation": "torch.tensor", "channel_order": "channel first", "minibatch_input": True,
+     "image_data_type": "float32(0to1)", "device": ["cpu", "gpu"], "color_channel": ["rgb", "gray"]})
+torch_lib.add_preset_with_override_metadata("rgb", {"color_channel": "rgb"})
+torch_lib.add_preset_with_override_metadata("gray", {"color_channel": "gray"})
 preset_table.add_lib_metadata("torch", torch_lib)
 
 numpy_lib = Metadata4Library(
-    {"data_representation": "numpy.ndarray", "minibatch_input": False, "device": "cpu"})
+    {"data_representation": "numpy.ndarray", "minibatch_input": False, "device": "cpu",
+     "image_data_type": ["uint8", "uint16", "uint32", "int8", "int16", "int32", "float32", "float64", "double",
+                         "float32(0to1)", "float32(-1to1)", "float64(0to1)", "float64(-1to1)", "double(0to1)",
+                         "double(-1to1)",
+                         ], })
 numpy_lib.add_preset_with_override_metadata("rgb", {"color_channel": "rgb", "channel_order": "channel last"})
 numpy_lib.add_preset_with_override_metadata("gray", {"color_channel": "gray", "channel_order": "none"})
-numpy_lib.add_preset_with_override_metadata("rgb_uint8", {"color_channel": "rgb", "channel_order": "channel last", "image_data_type": "uint8"})
+numpy_lib.add_preset_with_override_metadata("rgb_uint8", {"color_channel": "rgb", "channel_order": "channel last",
+                                                          "image_data_type": "uint8"})
 preset_table.add_lib_metadata("numpy", numpy_lib)

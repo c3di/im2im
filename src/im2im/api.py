@@ -1,6 +1,6 @@
 from typing import List, Union
 
-from .find_metadata import find_target_metadata, Metadata4Library, get_preset_table
+from .find_metadata import find_target_metadata, Metadata4Library, get_preset_table, PossibleMetadata
 from .code_generator import ConvertCodeGenerator
 from .knowledge_graph_construction import (
     get_knowledge_graph_constructor,
@@ -27,7 +27,7 @@ class Image:
         hint_msg = (f" Please provide complete metadata including 'data_representation', 'color_channel',"
                     f" 'channel_order', 'minibatch_input', 'image_data_type', 'device'.")
         if isinstance(config, str):
-            metadata = get_predefined_metadata(config)
+            metadata = get_possible_metadata(config)
             if not is_metadata_complete(metadata):
                 raise Exception(f"Metadata {metadata} got using the preset for {config} is not complete." + hint_msg)
             self.metadata = metadata
@@ -63,8 +63,8 @@ def new_metadata(base_metadata: Metadata, **changed_attributes) -> Metadata:
     return new
 
 
-def get_predefined_metadata(preset: str) -> Metadata:
-    return get_preset_table().get_metadata(preset)
+def get_possible_metadata(preset: str) -> PossibleMetadata:
+    return get_preset_table().get_possible_metadata(preset)
 
 
 def add_lib_metadata(lib: str, metadata: Metadata4Library):
