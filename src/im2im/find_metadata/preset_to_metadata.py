@@ -33,6 +33,15 @@ class Metadata4Library:
     def get_possible_metadata(self, preset):
         if preset not in self.preset_with_override_metadata:
             return self.metadata
+
+        if isinstance(self.preset_with_override_metadata[preset], list):
+            final_metadata = []
+            for metadata in self.preset_with_override_metadata[preset]:
+                raw_metadata = self.metadata.copy()
+                raw_metadata.update(metadata)
+                final_metadata.append(raw_metadata)
+            return final_metadata
+
         final_metadata = self.metadata.copy()
         final_metadata.update(self.preset_with_override_metadata[preset])
         return final_metadata

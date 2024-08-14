@@ -16,6 +16,12 @@ skimage_lib = Metadata4Library(
                          ], })
 skimage_lib.add_preset_with_override_metadata("rgb", {"color_channel": "rgb", "channel_order": "channel last"})
 skimage_lib.add_preset_with_override_metadata("gray", {"color_channel": "gray", "channel_order": "none"})
+
+skimage_lib.add_preset_with_override_metadata("before_gaussian", [
+    skimage_lib.get_possible_metadata("gray"), skimage_lib.get_possible_metadata("rgb")])
+
+skimage_lib.add_preset_with_override_metadata("before_equalize_adapthist", skimage_lib.get_possible_metadata("before_gaussian"))
+
 preset_table.add_lib_metadata("skimage", skimage_lib)
 
 pil_lib = Metadata4Library(
@@ -28,6 +34,8 @@ torch_lib = Metadata4Library(
      "image_data_type": "float32(0to1)", "device": ["cpu", "gpu"], "color_channel": ["rgb", "gray"]})
 torch_lib.add_preset_with_override_metadata("rgb", {"color_channel": "rgb"})
 torch_lib.add_preset_with_override_metadata("gray", {"color_channel": "gray"})
+torch_lib.add_preset_with_override_metadata("gpu", {"device": "gpu"})
+
 preset_table.add_lib_metadata("torch", torch_lib)
 
 numpy_lib = Metadata4Library(
