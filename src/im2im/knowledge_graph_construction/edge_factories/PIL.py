@@ -1,5 +1,5 @@
 from .type import Conversion, FactoriesCluster, ConversionForMetadataPair
-from ...metadata_differ import are_both_same_data_repr
+from ..metedata import are_both_same_data_repr
 
 
 def is_attribute_value_valid_for_pil(metadata):

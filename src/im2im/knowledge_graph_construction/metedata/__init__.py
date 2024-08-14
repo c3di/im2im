@@ -11,6 +11,7 @@ metadata_values: MetadataValues = {
     # https://scikit-image.org/docs/stable/user_guide/data_types.html
     "image_data_type": ['uint8', 'uint16', 'uint32', 'uint64',
                         'int8', 'int16', 'int32', 'int64',
+                        'float32', 'float64', 'double',
                         'float32(0to1)', 'float32(-1to1)',
                         'float64(0to1)', 'float64(-1to1)',
                         'double(0to1)', 'double(-1to1)',

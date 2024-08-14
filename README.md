@@ -40,6 +40,9 @@ Our package is designed for easy knowledge graph extension. Once you are familia
 
 ## Evaluation
 
+**Comparative Analysis**
+
+The effectiveness and benefits of our library have been validated through comparative analyses. In two studies, we compared the image processing steps in workflows created using the base visual programming language for image processing (VPL4IP) and the one enhanced by our im2im library. We also assessed the technical demands on users for building such workflows. Both VPL4IPs are built on Blockly. In a third study, we compared the implementation workload when using numpy ndarray as the intermediate representation versus our automated approach. More detail, please refer to [Comparative Analysis](https://github.com/c3di/im2im/blob/main/comparative_analysis).
 
 **Accuracy**
 
@@ -48,10 +51,6 @@ All primitive conversion code snippets are stored within the edges of the knowle
 **Performance profiling**
 
 The performance of knowledge graph construction and code generation processes is meticulously analyzed using the cProfile module. For comprehensive insights, please refer to the [`profiling notebooks`](https://github.com/c3di/im2im/blob/main/profile).
-
-**Usability Evaluation**
-
-Please refer to [Usability Evaluation](https://github.com/c3di/im2im_evaluation).
 
 ## Contribution
 

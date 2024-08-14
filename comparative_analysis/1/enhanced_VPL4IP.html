@@ -76,22 +76,15 @@
   </head>
 
   <body>
-    <h3>case:</h3>
     <div id="Control">
       <button id="loadUseCase" onclick="loadWorkspace()">load Use Case</button>
       <button id="logWorkspace" onclick="logWorkspace()">
         console.log(current workspace)
       </button>
       <span class="separator"></span>
-      <label for="scaleInput">Set Scale:</label>
-      <input
-        type="text"
-        id="scaleInput"
-        placeholder="Enter scale (e.g., 1.0)"
-      />
-      <button onclick="setScale()">Set Scale</button>
-      <span class="separator"></span>
-      <button onclick="downloadWorkspaceSVG()">download workspace</button>
+      <button onclick="downloadWorkspaceSVG()">
+        download workspace in SVG
+      </button>
     </div>
     <div id="blocklyDiv"></div>
     <pre id="codeArea"></pre>
@@ -100,7 +93,7 @@
       function loadWorkspace(state) {
         var workspace = Blockly.getMainWorkspace();
         var savedState =
-          '{"blocks":{"languageVersion":0,"blocks":[{"type":"display_image","id":"d}Mn:{Kk)rDbB}s_8IAK","x":-847,"y":219,"fields":{"CMAP":"viridis"},"inputs":{"IMAGE":{"block":{"type":"draw_circle","id":"A|oIA558`/fHi.*thPwf","fields":{"radius":160,"width":10,"Y":650,"X":210,"COLOR":"#ff0000"},"inputs":{"IMAGE":{"block":{"type":"numpy_to_pil","id":"q3/EHo%5{BhAecNV}]fU","inputs":{"ARRAY":{"block":{"type":"float_to_uint8","id":"=:,@sW_hfu-]*%q%6Jxd","fields":{"normolized?":true},"inputs":{"IMAGE":{"block":{"type":"gray_to_rgb","id":"bF,.d=#7n.{Tu|[07mZ`","inputs":{"IMAGE":{"block":{"type":"sato_filter","id":":-[qs,1H%_9Iy2P%myLr","fields":{"SIGMAS":"range(1, 10, 2)","BLACK_RIDGES":true},"inputs":{"IMAGE":{"block":{"type":"bgr_to_gray","id":"Uo+ZQo!ve0w~O_v~Ly4z","inputs":{"IMAGE":{"block":{"type":"fastNlMeansDenoisingColored","id":"Y5RjfY=G^p0@?NgNT;Ye","fields":{"H":10,"HCOLOR":10,"TEMPLATEWINDOWSIZE":7,"SEARCHWINDOWSIZE":21},"inputs":{"SRC":{"block":{"type":"read_image","id":"2xdHv+uHTIakl9OIrQI?","fields":{"IMAGE_PATH":"retinal.jpg","AS_GRAY":false}}}}}}}}}}}}}}}}}}}}}}}}}}]}}';
+          '{"blocks":{"languageVersion":0,"blocks":[{"type":"optic_disc_annotation","id":"9/:2hOyx[1rDZhfzBS|n","x":73,"y":6,"fields":{"Y":650,"X":210,"radius":160,"width":10},"inputs":{"IMAGE":{"block":{"type":"numpy_to_pil","id":"5LuareXv|[oFcj:!owVU","inputs":{"ARRAY":{"block":{"type":"float_to_uint8","id":"u1u@i}s/D?=gKLcP7zc{","fields":{"normalized?":true},"inputs":{"IMAGE":{"block":{"type":"gray_to_rgb","id":"OTQ]@jFDriGOx]Qr~!8W","inputs":{"IMAGE":{"block":{"type":"sato_filter","id":"xjl#rmFNx]x(Nx-F9;RY","fields":{"SIGMAS":"range(1, 10, 2)","BLACK_RIDGES":true},"inputs":{"IMAGE":{"block":{"type":"bgr_to_gray","id":"SXM~7=9o!s!*3ku=L3v{","inputs":{"IMAGE":{"block":{"type":"fastNlMeansDenoisingColored","id":",1p|iJ($YJ,V[a[bsh3l","fields":{"H":10,"HCOLOR":10,"TEMPLATEWINDOWSIZE":7,"SEARCHWINDOWSIZE":21},"inputs":{"SRC":{"block":{"type":"read_image","id":"kX?AY,x]D^LJ{ri)-(lx","fields":{"IMAGE_PATH":"image.png","AS_GRAY":false}}}}}}}}}}}}}}}}}}}}}}}]}}';
         Blockly.serialization.workspaces.load(
           JSON.parse(savedState),
           workspace
@@ -118,32 +111,6 @@
         document.getElementById("scaleInput").value = scaleValue.toFixed(2);
       }
 
-      function initScale() {
-        var workspace = Blockly.getMainWorkspace();
-        updateScaleInput(workspace.scale);
-
-        // Add an event listener to update scale when it changes
-        workspace.addChangeListener(function (event) {
-          if (event.type === Blockly.Events.VIEWPORT_CHANGE) {
-            updateScaleInput(workspace.scale);
-          }
-        });
-      }
-
-      function setScale() {
-        var scaleValue = parseFloat(
-          document.getElementById("scaleInput").value
-        );
-        if (isNaN(scaleValue)) {
-          alert("Please enter a valid number for the scale.");
-          return;
-        }
-
-        var workspace = Blockly.getMainWorkspace();
-        workspace.setScale(scaleValue);
-        workspace.scrollCenter();
-      }
-
       function downloadWorkspaceSVG() {
         var svg = document.getElementsByClassName("blocklySvg")[0]; // Get the SVG element
         var styleElement = document.createElementNS(
@@ -157,6 +124,11 @@
                                       fill: #fff;
                                       fill-opacity: 0.6;
                                       stroke: none;
+                                  }
+                                  .blocklyPathLight {    
+                                    fill: none;
+                                    stroke-linecap: round;
+                                    stroke-width: 1;
                                   }`;
         svg.appendChild(styleElement);
 
@@ -196,7 +168,6 @@
       }
 
       window.onload = function () {
-        initScale();
         loadWorkspace();
       };
     </script>
@@ -204,16 +175,18 @@
       Blockly.defineBlocksWithJsonArray([
         {
           type: "read_image",
-          message0: "%1 read image ",
-          args0: [
+          message0: "read image ",
+          args0: [],
+          message1: "%1 path",
+          args1: [
             {
               type: "field_input",
               name: "IMAGE_PATH",
               text: "image.png",
             },
           ],
-          message1: "%1 as Gray? ",
-          args1: [
+          message2: "%1 as gray? ",
+          args2: [
             {
               type: "field_checkbox",
               name: "AS_GRAY",
@@ -255,28 +228,7 @@
               precision: 0.1,
             },
           ],
-          message3: "%1 template window size",
-          args3: [
-            {
-              type: "field_number",
-              name: "TEMPLATEWINDOWSIZE",
-              value: 7,
-              min: 1,
-              max: 31, // Optionally set a max to ensure usability
-              precision: 1,
-            },
-          ],
-          message4: "%1 search window size",
-          args4: [
-            {
-              type: "field_number",
-              name: "SEARCHWINDOWSIZE",
-              value: 21,
-              min: 1,
-              max: 101, // Optionally set a max to ensure usability
-              precision: 1,
-            },
-          ],
+
           inputsInline: false,
           output: "NUMPY",
           colour: 330,
@@ -287,7 +239,7 @@
         },
         {
           type: "bgr_to_gray",
-          message0: "BGR to Gray%1",
+          message0: "bgr to gray%1",
           args0: [
             {
               type: "input_value",
@@ -297,7 +249,7 @@
           ],
           inputsInline: false,
           output: "NUMPY",
-          colour: 65,
+          colour: 330,
           tooltip:
             "Converts an image from BGR color format to  grayscale format.",
           helpUrl: "",
@@ -339,7 +291,7 @@
         },
         {
           type: "gray_to_rgb",
-          message0: "Gray to RGB %1",
+          message0: "gray to rgb %1",
           args0: [
             {
               type: "input_value",
@@ -349,13 +301,13 @@
           ],
           inputsInline: false,
           output: "NUMPY",
-          colour: 65,
+          colour: 260,
           tooltip: "Converts an image from gray format to rgb.",
           helpUrl: "",
         },
         {
           type: "float_to_uint8",
-          message0: "float to uint8 %1",
+          message0: "float(0to1) to uint8(0-255) %1",
           args0: [
             {
               type: "input_value",
@@ -363,23 +315,37 @@
               check: "NUMPY",
             },
           ],
-          message1: "%1 normolized",
+          message1: "%1 normalized",
           args1: [
             {
               type: "field_checkbox",
-              name: "normolized?",
+              name: "normalized?",
               checked: false,
+            },
+          ],
+          message1: "%1",
+          args1: [
+            {
+              type: "field_label",
+              text: "", // Empty placeholder for alignment, if needed
+            },
+          ],
+          message2: "%1",
+          args2: [
+            {
+              type: "field_label",
+              text: "", // Empty placeholder for alignment, if needed
             },
           ],
           inputsInline: false,
           output: "NUMPY",
-          colour: 65,
+          colour: 260,
           tooltip: "Converts an image to 8-bit uint.",
           helpUrl: "",
         },
         {
           type: "numpy_to_pil",
-          message0: "NumPy array %1",
+          message0: "numpy.narray %1",
           args0: [
             {
               type: "input_value",
@@ -387,8 +353,15 @@
               check: "NUMPY",
             },
           ],
-          message1: "to Pillow Image %1",
+          message1: "to Pillow.Image.Image %1",
           args1: [
+            {
+              type: "field_label",
+              text: "", // Empty placeholder for alignment, if needed
+            },
+          ],
+          message2: "%1",
+          args2: [
             {
               type: "field_label",
               text: "", // Empty placeholder for alignment, if needed
@@ -396,13 +369,13 @@
           ],
           inputsInline: false,
           output: "PIL",
-          colour: 65,
+          colour: 20,
           tooltip: "Converts a NumPy array to a Pillow Image format.",
           helpUrl: "",
         },
         {
-          type: "draw_circle",
-          message0: "draw circle %1",
+          type: "optic_disc_annotation",
+          message0: "optic disc annotation %1",
           args0: [
             {
               type: "input_value",
@@ -410,89 +383,44 @@
               // check: "PIL",
             },
           ],
-          message1: "%1 radius",
+          message1: "%2 Y: %1 X:",
           args1: [
-            {
-              type: "field_number",
-              name: "radius",
-              value: 21,
-              min: 1,
-            },
-          ],
-          message2: "%1 width",
-          args2: [
-            {
-              type: "field_number",
-              name: "width",
-              value: 3,
-              min: 1,
-            },
-          ],
-          message1: "%1 radius",
-          args1: [
-            {
-              type: "field_number",
-              name: "radius",
-              value: 21,
-              min: 1,
-            },
-          ],
-          message3: "%2 Y: %1 X:",
-          args3: [
             {
               type: "field_number",
               name: "X",
-              value: 0,
+              value: 210,
               min: 0,
               precision: 1,
             },
             {
               type: "field_number",
               name: "Y",
-              value: 0,
+              value: 650,
               min: 0,
               precision: 1,
             },
           ],
-          message4: "%1 color",
-          args4: [
+          message2: "%1 radius %2 width",
+          args2: [
             {
-              type: "field_colour",
-              name: "COLOR",
-              colour: "#ff0000",
+              type: "field_number",
+              name: "radius",
+              value: 160,
+              min: 1,
+            },
+            {
+              type: "field_number",
+              name: "width",
+              value: 10,
+              min: 1,
             },
           ],
+
           inputsInline: false,
           output: "Image",
           colour: 20,
           tooltip:
             "Draw a circle on an image at the given coordinates with specified radius and color.",
-          helpUrl: "",
-        },
-        {
-          type: "display_image",
-          message0: "display %1  %2 colormap",
-          args0: [
-            {
-              type: "input_value",
-              name: "IMAGE",
-              check: "Image",
-            },
-            {
-              type: "field_dropdown",
-              name: "CMAP",
-              options: [
-                ["viridis", "viridis"], // The format is [human-readable, machine-readable]
-                ["gray", "gray"],
-              ],
-            },
-          ],
-          inputsInline: false,
-          previousStatement: null,
-          nextStatement: null,
-          colour: 290,
-          tooltip:
-            "Displays an image from a provided value. The 'cmap' parameter specifies the Colormap instance or registered colormap name used to map scalar data to colors. This parameter is ignored if the image is RGB(A).",
           helpUrl: "",
         },
       ]);
@@ -511,7 +439,10 @@
           return [code, Blockly.Python.ORDER_NONE];
         }
       };
+      // Blockly.Blocks["read_image"].init = function () {
 
+      //   this.setCollapsible(true);
+      // };
       Blockly.Python["fastNlMeansDenoisingColored"] = function (block) {
         requiredImports.add("import cv2");
         var src =
@@ -539,7 +470,7 @@
           "denoised_image",
           Blockly.VARIABLE_CATEGORY_NAME
         );
-        var code = `${resultVar} = ${denoise_code}\n`;
+        var code = `${resultVar} = ${denoise_code}`;
         Blockly.Python.definitions_["define_" + resultVar] = code;
 
         return [`${resultVar}`, Blockly.Python.ORDER_NONE];
@@ -571,7 +502,7 @@
           "sato_filtered_image",
           Blockly.VARIABLE_CATEGORY_NAME
         );
-        var code = `${resultVar} = ${sato_code}\n`;
+        var code = `${resultVar} = ${sato_code}`;
         Blockly.Python.definitions_["define_" + resultVar] = code;
         return [`${resultVar}`, Blockly.Python.ORDER_NONE];
       };
@@ -595,13 +526,13 @@
             "IMAGE",
             Blockly.Python.ORDER_NONE
           ) || "None";
-        var normolized = block.getFieldValue("normolized?") === "TRUE";
-        if (normolized) {
+        var normalized = block.getFieldValue("normalized?") === "TRUE";
+        if (normalized) {
           var resultVar = Blockly.Python.nameDB_.getDistinctName(
             "uint8_image",
             Blockly.VARIABLE_CATEGORY_NAME
           );
-          var code = `${resultVar} = ${image}\n`;
+          var code = `${resultVar} = ${image}`;
           Blockly.Python.definitions_["define_" + resultVar] = code;
           return [
             `img_as_ubyte(${resultVar} / ${resultVar}.max())`,
@@ -626,7 +557,7 @@
         return [code, Blockly.Python.ORDER_NONE];
       };
 
-      Blockly.Python["draw_circle"] = function (block) {
+      Blockly.Python["optic_disc_annotation"] = function (block) {
         var image =
           Blockly.Python.valueToCode(
             block,
@@ -653,25 +584,6 @@
         return [`${resultVar}`, Blockly.Python.ORDER_NONE];
       };
 
-      Blockly.Python["display_image"] = function (block) {
-        requiredImports.add("import matplotlib.pyplot as plt");
-        var image = Blockly.Python.valueToCode(
-          block,
-          "IMAGE",
-          Blockly.Python.ORDER_NONE
-        );
-        var cmap = block.getFieldValue("CMAP");
-        var code =
-          "plt.imshow(" +
-          image +
-          ", cmap='" +
-          cmap +
-          "')\n" +
-          "plt.axis('off')\n" +
-          "plt.show()";
-        return code;
-      };
-
       function generateImports() {
         var imports = "";
         requiredImports.forEach(function (importStatement) {
@@ -690,8 +602,7 @@
           '<block type="gray_to_rgb"></block>' +
           '<block type="float_to_uint8"></block>' +
           '<block type="numpy_to_pil"></block>' +
-          '<block type="draw_circle"></block>' +
-          '<block type="display_image"></block>' +
+          '<block type="optic_disc_annotation"></block>' +
           "</xml>",
         zoom: {
           controls: true,

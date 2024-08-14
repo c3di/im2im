@@ -1,11 +1,9 @@
-from .type import Conversion, FactoriesCluster
-from ...metadata_differ import are_both_same_data_repr, is_differ_value_for_key
+from .type import Conversion, FactoriesCluster, ConversionForMetadataPair
+from ..metedata import are_both_same_data_repr, is_differ_value_for_key
 
 
 def is_metadata_valid_for_numpy(metadata):
-    if metadata["color_channel"] in ["rgb", "bgr"] and metadata["channel_order"] == "none":
-        return False
-    return True
+    return not (metadata["color_channel"] in ["rgb", "bgr"] and metadata["channel_order"] == "none")
 
 
 def is_attribute_value_valid_for_numpy(metadata):
@@ -22,6 +20,9 @@ def is_attribute_value_valid_for_numpy(metadata):
             "int8",
             "int16",
             "int32",
+            "float32",
+            "float64",
+            "double",
             "float32(0to1)",
             "float32(-1to1)",
             "float64(0to1)",
@@ -298,6 +299,16 @@ def image_data_to_int16_full_range(source_metadata, target_metadata) -> Conversi
         return "import skimage as ski", "def convert(var):\n return ski.util.img_as_int(var)",
 
 
+def convert_image_dtype_float_to_uint8(source_metadata, target_metadata) -> Conversion:
+    if (
+            source_metadata.get("image_data_type") in ["float32", "float64", "double"]
+            and target_metadata.get("image_data_type") == "uint8"
+    ):
+        return (
+            "import numpy as np", "def convert(var):\n return var.astype(np.uint8)",
+        )
+
+
 dtype_float_mapping = {
     "float32": "np.float32",
     "float64": "np.float64",
@@ -320,7 +331,8 @@ dtype_float_minus1_to_1_mapping = {
 def convert_image_dtype_float_to_float(source_metadata, target_metadata) -> Conversion:
     if is_differ_value_for_key(source_metadata, target_metadata, "image_data_type"):
         for float_type_mapping in [dtype_float_mapping, dtype_float_0_to_1_mapping, dtype_float_minus1_to_1_mapping]:
-            if source_metadata["image_data_type"] in float_type_mapping and target_metadata["image_data_type"] in float_type_mapping:
+            if source_metadata["image_data_type"] in float_type_mapping and target_metadata[
+                "image_data_type"] in float_type_mapping:
                 return (
                     "import numpy as np",
                     f"def convert(var):\n return var.astype({float_type_mapping[target_metadata['image_data_type']]})",
@@ -397,6 +409,7 @@ factories_cluster_for_numpy: FactoriesCluster = (
         image_data_to_uint8_full_range,
         image_data_to_uint16_full_range,
         image_data_to_int16_full_range,
+        convert_image_dtype_float_to_uint8,
         convert_image_dtype_float_to_float,
         image_data_unsigned_integer_to_float32_0_to_1,
         image_data_integer_to_float32_minus1_to_1,
@@ -406,3 +419,74 @@ factories_cluster_for_numpy: FactoriesCluster = (
         image_data_float32_0_1_to_float32_minus1_1
     ],
 )
+
+factories_for_opencv_metadata_pair: list[ConversionForMetadataPair] = [
+    (
+        {
+            "data_representation": "numpy.ndarray",
+            "color_channel": 'rgb',
+            "channel_order": 'channel last',
+            "minibatch_input": False,
+            "image_data_type": 'uint8',
+            "device": 'cpu',
+        },
+        {
+            "data_representation": "numpy.ndarray",
+            "color_channel": 'gray',
+            "channel_order": 'none',
+            "minibatch_input": False,
+            "image_data_type": 'uint8',
+            "device": 'cpu',
+        }, ('import cv2', 'def convert(var):\n  return cv2.cvtColor(var, cv2.COLOR_RGB2GRAY)')),
+    (
+        {
+            "data_representation": "numpy.ndarray",
+            "color_channel": 'bgr',
+            "channel_order": 'channel last',
+            "minibatch_input": False,
+            "image_data_type": 'uint8',
+            "device": 'cpu',
+        },
+        {
+            "data_representation": "numpy.ndarray",
+            "color_channel": 'gray',
+            "channel_order": 'none',
+            "minibatch_input": False,
+            "image_data_type": 'uint8',
+            "device": 'cpu',
+        }, ('import cv2', 'def convert(var):\n  return cv2.cvtColor(var, cv2.COLOR_BGR2GRAY)')),
+    (
+        {
+            "data_representation": "numpy.ndarray",
+            "color_channel": 'gray',
+            "channel_order": 'none',
+            "minibatch_input": False,
+            "image_data_type": 'uint8',
+            "device": 'cpu',
+        },
+        {
+            "data_representation": "numpy.ndarray",
+            "color_channel": 'rgb',
+            "channel_order": 'channel last',
+            "minibatch_input": False,
+            "image_data_type": 'uint8',
+            "device": 'cpu',
+        }, ('import cv2', 'def convert(var):\n  return cv2.cvtColor(var, cv2.COLOR_GRAY2RGB)')),
+    (
+        {
+            "data_representation": "numpy.ndarray",
+            "color_channel": 'gray',
+            "channel_order": 'none',
+            "minibatch_input": False,
+            "image_data_type": 'uint8',
+            "device": 'cpu',
+        },
+        {
+            "data_representation": "numpy.ndarray",
+            "color_channel": 'bgr',
+            "channel_order": 'channel last',
+            "minibatch_input": False,
+            "image_data_type": 'uint8',
+            "device": 'cpu',
+        }, ('import cv2', 'def convert(var):\n  return cv2.cvtColor(var, cv2.COLOR_GRAY2BGR)')),
+]
