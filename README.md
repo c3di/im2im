@@ -1,4 +1,4 @@
-# im2im
+# im2im: Automatically Converting In-Memory Image Representations using A Knowledge Graph Approach
 
 [![PyPI - Version](https://img.shields.io/pypi/v/im2im.svg)](https://pypi.org/project/im2im/)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/im2im)](https://pypi.org/project/im2im/)
@@ -9,8 +9,7 @@
 
 The `im2im` package provides an automated approach for converting in-memory image representations across a variety of image processing libraries, including `scikit-image`, `opencv-python`, `scipy`, `PIL`, `Matplotlib.plt.imshow`, `PyTorch`, `Kornia` and `Tensorflow`. It handles the nuances inherent to each library's image representation, such as data formats (numpy arrays, PIL images, torch tensors, and so on), color channel (RGB or grayscale), channel order (channel first or last or none), device (CPU/GPU), and pixel intensity ranges.
 
-
-At the core of the package is a knowledge graph, where each node encapsulates metadata detailing an image representation, and the edges between nodes represent code snippets for converting images from one representation to another. When converting from the source to the target, the `im2im` package identifies the shortest path within the graph,  it gathers all relevant conversion snippets encountered along the path. These snippets are then combined to formulate the final conversion code, which is subsequently employed to transform the source images into the desired target format.
+Im2im was developed for the use in Visual Programming Language for image processing (VPL4IPs) to completely removes the conversions steps required to manually manage image transformations, drastically improving accessibility, specifically for non-expert users. It also addresses the tension between low-level implementation details necessary for compatibility and the high-level image processing operations that VPL4IPs aim to provide. However, the library is a conventional Python package, and as such, it can also be used by directly invoking its functions from any Python image processing program to automate image conversion steps. Considering the relatively low memory footprint and computational overhead of the system, using the library to simplify conventional Python programming is an interesting option as well. 
 
 
 ## Installation
@@ -23,45 +22,38 @@ pip install im2im
 
 ## Usage
 
-One example from the image data in numpy to the image data in PyTorch:
 ```python
 import numpy as np
-from im2im import im2im
+from im2im import Image, im2im
 
-source = np.random.randint(0, 256, (20, 20, 3), dtype=np.uint8)
-target = im2im(source, {"lib": "numpy"}, {"lib": "torch", "color_channel":"gray", "image_dtype": "uint8"})
+# Assume an image that is a numpy.ndarray with shape (20, 20, 3) in uint8 format
+image = np.random.randint(0, 256, (20, 20, 3), dtype=np.uint8)
+# Initialize the image with the corresponding metadata preset for numpy RGB uint8 format
+from_im = Image(image, "numpy.rgb_uint8")
+# Convert the image to a torch tensor with shape (1, 3, 20, 20), in float32 format,
+# normalized to the range [0, 1], and transferred to the GPU
+to_im = im2im(from_im, "torch.gpu")
+# Access the converted image data via to_im.raw_image
 ```
 
-For other APIs like `im2im_code`, and `im2im_path`, please refer to [tutorials](https://github.com/c3di/im2im/blob/main/tutorial.ipynb) or [public APIs](https://github.com/c3di/im2im/blob/main/src/im2im/interface_py_api.py).
-
-## Knowledge Graph Extension
-
-Our package is designed for easy knowledge graph extension. Once you are familiar with the mechanisms behind the construction of the knowledge graph, you can leverage a suite of functions designed for various extension requirements including `add_meta_values_for_image`, `add_edge_factory_cluster`, and `add_conversion_for_metadata_pairs`, each tailored for different extension needs. 
+For other APIs like `im2im_code`, please refer to [public APIs](https://github.com/c3di/im2im/blob/main/src/im2im/api.py).
 
 ## Evaluation
 
 **Comparative Analysis**
-
-The effectiveness and benefits of our library have been validated through comparative analyses. In two studies, we compared the image processing steps in workflows created using the base visual programming language for image processing (VPL4IP) and the one enhanced by our im2im library. We also assessed the technical demands on users for building such workflows. Both VPL4IPs are built on Blockly. In a third study, we compared the implementation workload when using numpy ndarray as the intermediate representation versus our automated approach. More detail, please refer to [Comparative Analysis](https://github.com/c3di/im2im/blob/main/comparative_analysis).
+The effectiveness and benefits for VPL4IPs are validated through Comparative Analysis](https://github.com/c3di/im2im/blob/main/comparative_analysis).
 
 **Accuracy**
+All conversion code snippets are thoroughly verified through [execution checks](https://github.com/c3di/im2im/blob/main/tests/test_conversion_code_in_kg.py) to ensure their correctness.
 
-All primitive conversion code snippets are stored within the edges of the knowledge graph. These snippets are verified through execution checks to guarantee their correctness. For a more in-depth examination, please refer to the [`test_conversion_code_in_kg.py`](https://github.com/c3di/im2im/blob/main/tests/test_conversion_code_in_kg.py).
-
-**Performance profiling**
-
-The performance of knowledge graph construction and code generation processes is meticulously analyzed using the cProfile module. For comprehensive insights, please refer to the [`profiling notebooks`](https://github.com/c3di/im2im/blob/main/profile).
+**Performance Profiling**
+Performance is analyzed using the cProfile module, with detailed results available in the [profiling notebooks](https://github.com/c3di/im2im/blob/main/profile).
 
 ## Contribution
 
-We welcome all contributions to this project! If you have suggestions, feature requests, or want to contribute in any other way, please feel free to open an issue or submit a pull request.
-
-
-For detailed instructions on developing, building, and publishing this package, please refer to the [README_DEV](https://github.com/c3di/im2im/blob/main/README_Dev.md).
+We welcome all contributions to this project! If you have suggestions, feature requests, or want to contribute in any other way, please feel free to open an issue or submit a pull request. For detailed instructions on developing, building, and publishing this package, please refer to the [README_DEV](https://github.com/c3di/im2im/blob/main/README_Dev.md).
 
 ## Cite
-
-if you use our tool or code in your research, please cite the following paper:
 
 Todo
 
