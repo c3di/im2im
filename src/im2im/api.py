@@ -15,11 +15,11 @@ preset_table = get_preset_table()
 
 
 class Image:
-    def __init__(self, raw_image, config: Metadata | str):
+    def __init__(self, raw_image, config: Union['Metadata', str]):
         self.raw_image = raw_image
         self._init_metadata(config)
 
-    def _init_metadata(self, config: Metadata | str):
+    def _init_metadata(self, config: Union['Metadata', str]):
         """
         Args:
             config: Metadata | str: If str, it should be a preset path ("lib.preset"). If Metadata, it should be a complete metadata.
