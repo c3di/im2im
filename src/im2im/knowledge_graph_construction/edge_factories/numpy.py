@@ -307,8 +307,6 @@ def convert_image_dtype_float_to_uint8(source_metadata, target_metadata) -> Conv
         return (
             "import numpy as np", "def convert(var):\n return var.astype(np.uint8)",
         )
-    else:
-        print("source_metadata", source_metadata)
 
 
 dtype_float_mapping = {
