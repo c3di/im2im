@@ -27,16 +27,17 @@ import numpy as np
 from im2im import Image, im2im
 
 # Assume an image that is a numpy.ndarray with shape (20, 20, 3) in uint8 format
-image = np.random.randint(0, 256, (20, 20, 3), dtype=np.uint8)
-# Initialize the image with the corresponding metadata preset for numpy RGB uint8 format
-from_im = Image(image, "numpy.rgb_uint8")
-# Convert the image to a torch tensor with shape (1, 3, 20, 20), in float32 format,
-# normalized to the range [0, 1], and transferred to the GPU
-to_im = im2im(from_im, "torch.gpu")
-# Access the converted image data via to_im.raw_image
+to_be_converted = np.random.randint(0, 256, (20, 20, 3), dtype=np.uint8)
+
+# Convert the image using the input preset "numpy.rgb_uint8" for the source image and "torch.gpu" for the target image.
+converted: Image = im2im(Image(to_be_converted, "numpy.rgb_uint8"), "torch.gpu")
+# Access the converted image data via 'converted.raw_image', which is now a torch tensor with shape (1, 3, 20, 20),
+# in float32 format, normalized to the range [0, 1], and transferred to the GPU.
 ```
 
-For other APIs like `im2im_code`, please refer to [public APIs](https://github.com/c3di/im2im/blob/main/src/im2im/api.py).
+For other APIs like `im2im_code`, please refer to [public APIs](https://github.com/c3di/im2im/blob/main/src/im2im/api.py). 
+
+For integration to visual programming language, please refer to [Comparative Analysis](https://github.com/c3di/im2im/blob/main/comparative_analysis).
 
 ## Evaluation
 
