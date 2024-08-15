@@ -1,92 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Enhanced VPL4IP</title>
-    <!-- Load Blockly core -->
-    <script src="https://unpkg.com/blockly/blockly_compressed.js"></script>
-    <!-- Load the default blocks -->
-    <script src="https://unpkg.com/blockly/blocks_compressed.js"></script>
-    <!-- Load a generator -->
-    <script src="https://unpkg.com/blockly/python_compressed.js"></script>
-    <!-- Load a message file -->
-    <script src="https://unpkg.com/blockly/msg/en.js"></script>
-    <style>
-      html,
-      body {
-        height: 100%;
-        width: 100%;
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-      }
 
-      #blocklyDiv {
-        flex: 3;
-        /* Take up all remaining space */
-        min-width: 400px;
-        /* Minimum width of Blockly area */
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Enhanced VPL4IP</title>
+  <!-- Load Blockly core -->
+  <script src="https://unpkg.com/blockly/blockly_compressed.js"></script>
+  <!-- Load the default blocks -->
+  <script src="https://unpkg.com/blockly/blocks_compressed.js"></script>
+  <!-- Load a generator -->
+  <script src="https://unpkg.com/blockly/python_compressed.js"></script>
+  <!-- Load a message file -->
+  <script src="https://unpkg.com/blockly/msg/en.js"></script>
+  <style>
+    html,
+    body {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
 
-      #codeArea {
-        flex: 1;
-        /* Takes up one-fourth of the space */
-        background-color: #f8f9fa;
-        border-left: 1px solid #ccc;
-        overflow: auto;
-        font-family: monospace;
-        padding: 10px;
-        box-sizing: border-box;
-      }
+    #blocklyDiv {
+      flex: 3;
+      /* Take up all remaining space */
+      min-width: 400px;
+      /* Minimum width of Blockly area */
+    }
 
-      #Control {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin: 10px;
-      }
+    #codeArea {
+      flex: 1;
+      /* Takes up one-fourth of the space */
+      background-color: #f8f9fa;
+      border-left: 1px solid #ccc;
+      overflow: auto;
+      font-family: monospace;
+      padding: 10px;
+      box-sizing: border-box;
+    }
 
-      #Control label {
-        margin-right: 5px;
-      }
+    #Control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 10px;
+    }
 
-      #scaleInput {
-        padding: 8px;
-        width: auto;
-      }
+    #Control label {
+      margin-right: 5px;
+    }
 
-      button {
-        padding: 8px 16px;
-        cursor: pointer;
-      }
+    #scaleInput {
+      padding: 8px;
+      width: auto;
+    }
 
-      .separator {
-        display: inline-block;
-        height: 30px;
-        width: 2px;
-        background-color: #ccc;
-        margin: 0 10px;
-        vertical-align: middle;
-      }
-    </style>
-  </head>
+    button {
+      padding: 8px 16px;
+      cursor: pointer;
+    }
 
-  <body>
-    <div id="Control">
-      <button id="loadUseCase" onclick="loadWorkspace()">load Use Case</button>
-      <button id="logWorkspace" onclick="logWorkspace()">
-        console.log(current workspace)
-      </button>
-      <span class="separator"></span>
-      <button onclick="downloadWorkspaceSVG()">
-        download workspace in SVG
-      </button>
-    </div>
-    <div id="blocklyDiv"></div>
-    <h2>Python Code Generated from the workflow above</h5>
+    .separator {
+      display: inline-block;
+      height: 30px;
+      width: 2px;
+      background-color: #ccc;
+      margin: 0 10px;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="Control">
+    <button id="loadUseCase" onclick="loadWorkspace()">load Use Case</button>
+    <button id="logWorkspace" onclick="logWorkspace()">
+      console.log(current workspace)
+    </button>
+    <span class="separator"></span>
+    <button onclick="downloadWorkspaceSVG()">
+      download workspace in SVG
+    </button>
+  </div>
+  <div id="blocklyDiv"></div>
+  <h2>Python Code Generated from the workflow above</h5>
     <pre id="codeArea"></pre>
 
     <script>
@@ -254,7 +255,7 @@
           var code = "Image(cv2.imread(" + imageUrl + "), 'opencv.bgr')";
         }
         var resultVar = Blockly.Python.nameDB_.getDistinctName(
-          "raw_image",
+          "out_image",
           Blockly.VARIABLE_CATEGORY_NAME
         );
         var code = `${resultVar} = ${code}`;
@@ -280,8 +281,8 @@
           Blockly.VARIABLE_CATEGORY_NAME
         );
         var convert_to = `in_im = im2im(${src}, 'opencv.bgr')`;
-        var operation = `denoised_image = cv2.fastNlMeansDenoisingColored(in_im.raw_image, None, ${h}, ${hColor}, ${templateWindowSize}, ${searchWindowSize})`;
-        var convert_back = `${resultVar} = Image(denoised_image, in_im.metadata)`;
+        var operation = `e_denoised = cv2.fastNlMeansDenoisingColored(in_im.raw_image, None, ${h}, ${hColor}, ${templateWindowSize}, ${searchWindowSize})`;
+        var convert_back = `${resultVar} = Image(e_denoised, in_im.metadata)`;
         var code = `${convert_to}\n${operation}\n${convert_back}`;
 
         Blockly.Python.definitions_["define_" + resultVar] = code;
@@ -304,8 +305,8 @@
         );
 
         var convert_to = `in_im = im2im(${image}, 'skimage.gray')`;
-        var operation = `sato_filtered_image = sato(in_im.raw_image, sigmas=${sigmas}, black_ridges=${blackRidges})`;
-        var convert_back = `${resultVar} = Image(sato_filtered_image, {**in_im.metadata, 'image_data_type': 'float64'})`;
+        var operation = `e_sato_filtered = sato(in_im.raw_image, sigmas=${sigmas}, black_ridges=${blackRidges})`;
+        var convert_back = `${resultVar} = Image(e_sato_filtered, {**in_im.metadata, 'image_data_type': 'float64'})`;
         var code = `${convert_to}\n${operation}\n${convert_back}`;
 
         Blockly.Python.definitions_["define_" + resultVar] = code;
@@ -326,15 +327,15 @@
         var width = block.getFieldValue("width") || "3";
         requiredImports.add("from PIL import ImageDraw");
         var resultVar = Blockly.Python.nameDB_.getDistinctName(
-          "drawn_image",
+          "out_image",
           Blockly.VARIABLE_CATEGORY_NAME
         );
         var convert_to = `in_im = im2im(${image}, 'pil.rgb_uint8')`;
         var operation =
-          `pil_image = in_im.raw_image\n` +
-          `draw = ImageDraw.Draw(pil_image)\n` +
+          `e_drawn_image = in_im.raw_image\n` +
+          `draw = ImageDraw.Draw(e_drawn_image)\n` +
           `draw.ellipse([(${posX - radius}, ${posY - radius}), (${posX + radius}, ${posY + radius})], outline='red', width=${width})\n`;
-        var convert_back = `${resultVar} = Image(pil_image, in_im.metadata)`;
+        var convert_back = `${resultVar} = Image(e_drawn_image, in_im.metadata)`;
         var code = `${convert_to}\n${operation}\n${convert_back}`;
 
         Blockly.Python.definitions_["define_" + resultVar] = code;
@@ -452,11 +453,12 @@
       }
 
       workspace.addChangeListener(updateCode);
-      
+
       window.onload = function () {
         loadWorkspace();
         updateCode();
       };
     </script>
-  </body>
+</body>
+
 </html>
