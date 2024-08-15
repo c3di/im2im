@@ -255,7 +255,7 @@
           var code = "Image(cv2.imread(" + imageUrl + "), 'opencv.bgr')";
         }
         var resultVar = Blockly.Python.nameDB_.getDistinctName(
-          "out_image",
+          "out_im",
           Blockly.VARIABLE_CATEGORY_NAME
         );
         var code = `${resultVar} = ${code}`;
@@ -280,9 +280,9 @@
           "out_im",
           Blockly.VARIABLE_CATEGORY_NAME
         );
-        var convert_to = `in_im = im2im(${src}, 'opencv.bgr')`;
-        var operation = `e_denoised = cv2.fastNlMeansDenoisingColored(in_im.raw_image, None, ${h}, ${hColor}, ${templateWindowSize}, ${searchWindowSize})`;
-        var convert_back = `${resultVar} = Image(e_denoised, in_im.metadata)`;
+        var convert_to = `in_im1 = im2im(${src}, 'opencv.bgr')`;
+        var operation = `e_denoised = cv2.fastNlMeansDenoisingColored(in_im1.raw_image, None, ${h}, ${hColor}, ${templateWindowSize}, ${searchWindowSize})`;
+        var convert_back = `${resultVar} = Image(e_denoised, in_im1.metadata)`;
         var code = `${convert_to}\n${operation}\n${convert_back}`;
 
         Blockly.Python.definitions_["define_" + resultVar] = code;
@@ -304,9 +304,9 @@
           Blockly.VARIABLE_CATEGORY_NAME
         );
 
-        var convert_to = `in_im = im2im(${image}, 'skimage.gray')`;
-        var operation = `e_sato_filtered = sato(in_im.raw_image, sigmas=${sigmas}, black_ridges=${blackRidges})`;
-        var convert_back = `${resultVar} = Image(e_sato_filtered, {**in_im.metadata, 'image_data_type': 'float64'})`;
+        var convert_to = `in_im2 = im2im(${image}, 'skimage.gray')`;
+        var operation = `e_sato_filtered = sato(in_im2.raw_image, sigmas=${sigmas}, black_ridges=${blackRidges})`;
+        var convert_back = `${resultVar} = Image(e_sato_filtered, {**in_im2.metadata, 'image_data_type': 'float64'})`;
         var code = `${convert_to}\n${operation}\n${convert_back}`;
 
         Blockly.Python.definitions_["define_" + resultVar] = code;
@@ -327,15 +327,15 @@
         var width = block.getFieldValue("width") || "3";
         requiredImports.add("from PIL import ImageDraw");
         var resultVar = Blockly.Python.nameDB_.getDistinctName(
-          "out_image",
+          "out_im",
           Blockly.VARIABLE_CATEGORY_NAME
         );
-        var convert_to = `in_im = im2im(${image}, 'pil.rgb_uint8')`;
+        var convert_to = `in_im3 = im2im(${image}, 'pil.rgb_uint8')`;
         var operation =
-          `e_drawn_image = in_im.raw_image\n` +
+          `e_drawn_image = in_im3.raw_image\n` +
           `draw = ImageDraw.Draw(e_drawn_image)\n` +
           `draw.ellipse([(${posX - radius}, ${posY - radius}), (${posX + radius}, ${posY + radius})], outline='red', width=${width})\n`;
-        var convert_back = `${resultVar} = Image(e_drawn_image, in_im.metadata)`;
+        var convert_back = `${resultVar} = Image(e_drawn_image, in_im3.metadata)`;
         var code = `${convert_to}\n${operation}\n${convert_back}`;
 
         Blockly.Python.definitions_["define_" + resultVar] = code;
