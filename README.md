@@ -42,7 +42,7 @@ For integration to visual programming language, please refer to [Comparative Ana
 ## Evaluation
 
 **Comparative Analysis**
-The effectiveness and benefits for VPL4IPs are validated through [Comparative Analysis](https://github.com/c3di/im2im/blob/main/comparative_analysis).
+The effectiveness and benefits for VPL4IPs are validated through [Comparative Analysis](https://github.com/c3di/im2im/blob/main/comparative_analysis). For detailed comparisons, please refer to the following studies: [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1cf5M1gOMdMXaRIKsCYalVj99RzMYSy8C?usp=sharing), [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1qPPL-IvovlhdKv-_0SjADBSOc60SPZDT?usp=sharing) and [third study](https://github.com/c3di/im2im/blob/main/comparative_analysis/3/Implementation_Comparison.pdf).
 
 **Accuracy**
 All conversion code snippets are thoroughly verified through [execution checks](https://github.com/c3di/im2im/blob/main/tests/test_conversion_code_in_kg.py) to ensure their correctness.
