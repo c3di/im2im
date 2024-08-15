@@ -213,9 +213,9 @@
           "out_im",
           Blockly.VARIABLE_CATEGORY_NAME
         );
-        var convert_to = `in_im = im2im(${image}, 'skimage.before_gaussian')`;
-        var operation = `e_gaussian_filtered = gaussian(in_im.raw_image, sigma=${sigma})`;
-        var convert_back = `${resultVar} = Image(e_gaussian_filtered, {**in_im.metadata, 'image_data_type': 'float64(0to1)'})`;
+        var convert_to = `in_im1 = im2im(${image}, 'skimage.before_gaussian')`;
+        var operation = `e_gaussian_filtered = gaussian(in_im1.raw_image, sigma=${sigma})`;
+        var convert_back = `${resultVar} = Image(e_gaussian_filtered, {**in_im1.metadata, 'image_data_type': 'float64(0to1)'})`;
         var code = `${convert_to}\n${operation}\n${convert_back}`;
 
         Blockly.Python.definitions_["define_" + resultVar] = code;
@@ -237,9 +237,9 @@
           Blockly.VARIABLE_CATEGORY_NAME
         );
 
-        var convert_to = `in_im = im2im(${image}, 'torch.gpu')`;
-        var operation = `e_super_res_image = super_resolution(in_im.raw_image, ${scale})`;
-        var convert_back = `${resultVar} = Image(e_super_res_image, in_im.metadata)`;
+        var convert_to = `in_im2 = im2im(${image}, 'torch.gpu')`;
+        var operation = `e_super_res_image = super_resolution(in_im2.raw_image, ${scale})`;
+        var convert_back = `${resultVar} = Image(e_super_res_image, in_im2.metadata)`;
         var code = `${convert_to}\n${operation}\n${convert_back}`;
 
         Blockly.Python.definitions_["define_" + resultVar] = code;
@@ -261,9 +261,9 @@
           "out_im",
           Blockly.VARIABLE_CATEGORY_NAME
         );
-        var convert_to = `in_im = im2im(${image}, 'skimage.before_equalize_adapthist')`; 
-        var operation = `e_contrast_enhanced = equalize_adapthist(in_im.raw_image)`;
-        var convert_back = `${inputVar} = Image(e_contrast_enhanced, {**in_im.metadata, 'image_data_type': 'float64(0to1)'})`;
+        var convert_to = `in_im3 = im2im(${image}, 'skimage.before_equalize_adapthist')`; 
+        var operation = `e_contrast_enhanced = equalize_adapthist(in_im3.raw_image)`;
+        var convert_back = `${inputVar} = Image(e_contrast_enhanced, {**in_im3.metadata, 'image_data_type': 'float64(0to1)'})`;
         var code = `${convert_to}\n${operation}\n${convert_back}`;
         Blockly.Python.definitions_["define_" + inputVar] = code;
         return [`${inputVar}`, Blockly.Python.ORDER_NONE];
