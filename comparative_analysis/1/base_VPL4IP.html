@@ -1,92 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Base VPL4IP</title>
-    <!-- Load Blockly core -->
-    <script src="https://unpkg.com/blockly/blockly_compressed.js"></script>
-    <!-- Load the default blocks -->
-    <script src="https://unpkg.com/blockly/blocks_compressed.js"></script>
-    <!-- Load a generator -->
-    <script src="https://unpkg.com/blockly/python_compressed.js"></script>
-    <!-- Load a message file -->
-    <script src="https://unpkg.com/blockly/msg/en.js"></script>
-    <style>
-      html,
-      body {
-        height: 100%;
-        width: 100%;
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-      }
 
-      #blocklyDiv {
-        flex: 3;
-        /* Take up all remaining space */
-        min-width: 400px;
-        /* Minimum width of Blockly area */
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Base VPL4IP</title>
+  <!-- Load Blockly core -->
+  <script src="https://unpkg.com/blockly/blockly_compressed.js"></script>
+  <!-- Load the default blocks -->
+  <script src="https://unpkg.com/blockly/blocks_compressed.js"></script>
+  <!-- Load a generator -->
+  <script src="https://unpkg.com/blockly/python_compressed.js"></script>
+  <!-- Load a message file -->
+  <script src="https://unpkg.com/blockly/msg/en.js"></script>
+  <style>
+    html,
+    body {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
 
-      #codeArea {
-        flex: 1;
-        /* Takes up one-fourth of the space */
-        background-color: #f8f9fa;
-        border-left: 1px solid #ccc;
-        overflow: auto;
-        font-family: monospace;
-        padding: 10px;
-        box-sizing: border-box;
-      }
+    #blocklyDiv {
+      flex: 3;
+      /* Take up all remaining space */
+      min-width: 400px;
+      /* Minimum width of Blockly area */
+    }
 
-      #Control {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin: 10px;
-      }
+    #codeArea {
+      flex: 1;
+      /* Takes up one-fourth of the space */
+      background-color: #f8f9fa;
+      border-left: 1px solid #ccc;
+      overflow: auto;
+      font-family: monospace;
+      padding: 10px;
+      box-sizing: border-box;
+    }
 
-      #Control label {
-        margin-right: 5px;
-      }
+    #Control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 10px;
+    }
 
-      #scaleInput {
-        padding: 8px;
-        width: auto;
-      }
+    #Control label {
+      margin-right: 5px;
+    }
 
-      button {
-        padding: 8px 16px;
-        cursor: pointer;
-      }
+    #scaleInput {
+      padding: 8px;
+      width: auto;
+    }
 
-      .separator {
-        display: inline-block;
-        height: 30px;
-        width: 2px;
-        background-color: #ccc;
-        margin: 0 10px;
-        vertical-align: middle;
-      }
-    </style>
-  </head>
+    button {
+      padding: 8px 16px;
+      cursor: pointer;
+    }
 
-  <body>
-    <div id="Control">
-      <button id="loadUseCase" onclick="loadWorkspace()">load Use Case</button>
-      <button id="logWorkspace" onclick="logWorkspace()">
-        console.log(current workspace)
-      </button>
-      <span class="separator"></span>
-      <button onclick="downloadWorkspaceSVG()">
-        download workspace in SVG
-      </button>
-    </div>
-    <div id="blocklyDiv"></div>
-    <h2>Python Code Generated from the workflow above</h5>
+    .separator {
+      display: inline-block;
+      height: 30px;
+      width: 2px;
+      background-color: #ccc;
+      margin: 0 10px;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="Control">
+    <button id="loadUseCase" onclick="loadWorkspace()">load Use Case</button>
+    <button id="logWorkspace" onclick="logWorkspace()">
+      console.log(current workspace)
+    </button>
+    <span class="separator"></span>
+    <button onclick="downloadWorkspaceSVG()">
+      download workspace in SVG
+    </button>
+  </div>
+  <div id="blocklyDiv"></div>
+  <h2>Python Code Generated from the workflow above</h5>
     <pre id="codeArea"></pre>
 
     <script>
@@ -100,7 +101,7 @@
             {
               type: "field_input",
               name: "IMAGE_PATH",
-              text: "image.png",
+              text: "retinal.jpg",
             },
           ],
           message2: "%1 as gray? ",
@@ -208,24 +209,8 @@
             "http://scikit-image.org/docs/dev/api/skimage.filters.html#sato",
         },
         {
-          type: "gray_to_rgb",
-          message0: "gray to rgb %1",
-          args0: [
-            {
-              type: "input_value",
-              name: "IMAGE",
-              check: "NUMPY",
-            },
-          ],
-          inputsInline: false,
-          output: "NUMPY",
-          colour: 260,
-          tooltip: "Converts an image from gray format to rgb.",
-          helpUrl: "",
-        },
-        {
           type: "float_to_uint8",
-          message0: "float(0to1) to uint8(0-255) %1",
+          message0: "float64 to uint8 %1",
           args0: [
             {
               type: "input_value",
@@ -233,14 +218,7 @@
               check: "NUMPY",
             },
           ],
-          message1: "%1 normalized",
-          args1: [
-            {
-              type: "field_checkbox",
-              name: "normalized?",
-              checked: false,
-            },
-          ],
+
           inputsInline: false,
           output: "NUMPY",
           colour: 260,
@@ -278,13 +256,29 @@
           helpUrl: "",
         },
         {
+          type: "gray_to_rgb",
+          message0: "gray to rgb %1",
+          args0: [
+            {
+              type: "input_value",
+              name: "IMAGE",
+              check: "PIL",
+            },
+          ],
+          inputsInline: false,
+          output: "PIL",
+          colour: 20,
+          tooltip: "Converts an image from gray format to rgb.",
+          helpUrl: "",
+        },
+        {
           type: "optic_disc_annotation",
           message0: "optic disc annotation %1",
           args0: [
             {
               type: "input_value",
               name: "IMAGE",
-              // check: "PIL",
+              check: "PIL",
             },
           ],
           message1: "%2 Y: %1 X:",
@@ -335,12 +329,18 @@
         var imageUrl = Blockly.Python.quote_(block.getFieldValue("IMAGE_PATH"));
         var asGray = block.getFieldValue("AS_GRAY") === "TRUE";
         if (asGray) {
-          var code = "cv2.imread(" + imageUrl + ", cv.IMREAD_GRAYSCALE)";
-          return [code, Blockly.Python.ORDER_NONE];
+          var code = "cv2.imread(" + imageUrl + ", cv.IMREAD_GRAYSCALE))";
         } else {
           var code = "cv2.imread(" + imageUrl + ")";
-          return [code, Blockly.Python.ORDER_NONE];
         }
+        var resultVar = Blockly.Python.nameDB_.getDistinctName(
+          "raw_image",
+          Blockly.VARIABLE_CATEGORY_NAME
+        );
+        var code = `${resultVar} = ${code}`;
+        Blockly.Python.definitions_["define_" + resultVar] = code;
+
+        return [`${resultVar}`, Blockly.Python.ORDER_NONE];
       };
 
       Blockly.Python.forBlock["fastNlMeansDenoisingColored"] = function (block) {
@@ -354,23 +354,13 @@
         var h = block.getFieldValue("H") || "10";
         var hColor = block.getFieldValue("HCOLOR") || "10";
 
-        var denoise_code =
-          "cv2.fastNlMeansDenoisingColored(" +
-          src +
-          ", None, " +
-          h +
-          ", " +
-          hColor +
-          ", " +
-          templateWindowSize +
-          ", " +
-          searchWindowSize +
-          ")";
+        var operation =
+          `cv2.fastNlMeansDenoisingColored(${src}, None, ${h}, ${hColor}, ${templateWindowSize}, ${searchWindowSize})`
         var resultVar = Blockly.Python.nameDB_.getDistinctName(
-          "denoised_image",
+          "denoised",
           Blockly.VARIABLE_CATEGORY_NAME
         );
-        var code = `${resultVar} = ${denoise_code}`;
+        var code = `${resultVar} = ${operation}`;
         Blockly.Python.definitions_["define_" + resultVar] = code;
 
         return [`${resultVar}`, Blockly.Python.ORDER_NONE];
@@ -397,51 +387,27 @@
         var sigmas = block.getFieldValue("SIGMAS") || "range(1, 10, 2)";
         var blackRidges =
           block.getFieldValue("BLACK_RIDGES") == "TRUE" ? "True" : "False";
-        var sato_code = `sato(${image}, sigmas=${sigmas}, black_ridges=${blackRidges})`;
+        var operation = `sato(${image}, sigmas=${sigmas}, black_ridges=${blackRidges})`;
         var resultVar = Blockly.Python.nameDB_.getDistinctName(
-          "sato_filtered_image",
+          "sato_filtered",
           Blockly.VARIABLE_CATEGORY_NAME
         );
-        var code = `${resultVar} = ${sato_code}`;
+        var code = `${resultVar} = ${operation}`;
         Blockly.Python.definitions_["define_" + resultVar] = code;
         return [`${resultVar}`, Blockly.Python.ORDER_NONE];
       };
 
-      Blockly.Python.forBlock["gray_to_rgb"] = function (block) {
-        requiredImports.add("from skimage.color import gray2rgb");
-        var image = Blockly.Python.valueToCode(
-          block,
-          "IMAGE",
-          Blockly.Python.ORDER_NONE
-        );
-        var code = `gray2rgb(${image})`;
-        return [code, Blockly.Python.ORDER_NONE];
-      };
-
       Blockly.Python.forBlock["float_to_uint8"] = function (block) {
-        requiredImports.add("from skimage.util import img_as_ubyte");
+        requiredImports.add("import numpy as np");
         var image =
           Blockly.Python.valueToCode(
             block,
             "IMAGE",
             Blockly.Python.ORDER_NONE
           ) || "None";
-        var normalized = block.getFieldValue("normalized?") === "TRUE";
-        if (normalized) {
-          var resultVar = Blockly.Python.nameDB_.getDistinctName(
-            "uint8_image",
-            Blockly.VARIABLE_CATEGORY_NAME
-          );
-          var code = `${resultVar} = ${image}`;
-          Blockly.Python.definitions_["define_" + resultVar] = code;
-          return [
-            `img_as_ubyte(${resultVar} / ${resultVar}.max())`,
-            Blockly.Python.ORDER_NONE,
-          ];
-        } else {
-          var code = `img_as_ubyte(${image})`;
-          return [code, Blockly.Python.ORDER_NONE];
-        }
+
+        var code = `${image}.astype(np.uint8)`;
+        return [code, Blockly.Python.ORDER_NONE];
       };
 
       Blockly.Python.forBlock["numpy_to_pil"] = function (block) {
@@ -454,6 +420,16 @@
           ) || "None";
 
         var code = `Image.fromarray(${array})`;
+        return [code, Blockly.Python.ORDER_NONE];
+      };
+
+      Blockly.Python.forBlock["gray_to_rgb"] = function (block) {
+        var image = Blockly.Python.valueToCode(
+          block,
+          "IMAGE",
+          Blockly.Python.ORDER_NONE
+        );
+        var code = `${image}.convert('RGB')`;
         return [code, Blockly.Python.ORDER_NONE];
       };
 
@@ -471,7 +447,7 @@
         var width = block.getFieldValue("width") || "3";
         requiredImports.add("from PIL import ImageDraw");
         var resultVar = Blockly.Python.nameDB_.getDistinctName(
-          "pil_image",
+          "drawn_image",
           Blockly.VARIABLE_CATEGORY_NAME
         );
         var code =
@@ -479,7 +455,6 @@
           `draw = ImageDraw.Draw(${resultVar})\n` +
           `draw.ellipse([(${posX - radius}, ${posY - radius}), (${posX + radius}, ${posY + radius})], outline='red', width=${width})`;
         Blockly.Python.definitions_["define_" + resultVar] = code;
-        return `${resultVar}`
         return [`${resultVar}`, Blockly.Python.ORDER_COMMA];
       };
 
@@ -498,9 +473,9 @@
           '<block type="fastNlMeansDenoisingColored"></block>' +
           '<block type="bgr_to_gray"></block>' +
           '<block type="sato_filter"></block>' +
-          '<block type="gray_to_rgb"></block>' +
           '<block type="float_to_uint8"></block>' +
           '<block type="numpy_to_pil"></block>' +
+          '<block type="gray_to_rgb"></block>' +
           '<block type="optic_disc_annotation"></block>' +
           "</xml>",
         zoom: {
@@ -521,7 +496,7 @@
       function loadWorkspace(state) {
         var workspace = Blockly.getMainWorkspace();
         var savedState =
-          '{"blocks":{"languageVersion":0,"blocks":[{"type":"optic_disc_annotation","id":"9/:2hOyx[1rDZhfzBS|n","x":73,"y":6,"fields":{"Y":650,"X":210,"radius":160,"width":10},"inputs":{"IMAGE":{"block":{"type":"numpy_to_pil","id":"5LuareXv|[oFcj:!owVU","inputs":{"ARRAY":{"block":{"type":"float_to_uint8","id":"u1u@i}s/D?=gKLcP7zc{","fields":{"normalized?":true},"inputs":{"IMAGE":{"block":{"type":"gray_to_rgb","id":"OTQ]@jFDriGOx]Qr~!8W","inputs":{"IMAGE":{"block":{"type":"sato_filter","id":"xjl#rmFNx]x(Nx-F9;RY","fields":{"SIGMAS":"range(1, 10, 2)","BLACK_RIDGES":true},"inputs":{"IMAGE":{"block":{"type":"bgr_to_gray","id":"SXM~7=9o!s!*3ku=L3v{","inputs":{"IMAGE":{"block":{"type":"fastNlMeansDenoisingColored","id":",1p|iJ($YJ,V[a[bsh3l","fields":{"H":10,"HCOLOR":10,"TEMPLATEWINDOWSIZE":7,"SEARCHWINDOWSIZE":21},"inputs":{"SRC":{"block":{"type":"read_image","id":"kX?AY,x]D^LJ{ri)-(lx","fields":{"IMAGE_PATH":"retinal.jpg","AS_GRAY":false}}}}}}}}}}}}}}}}}}}}}}}]}}';
+          '{"blocks":{"languageVersion":0,"blocks":[{"type":"optic_disc_annotation","id":"Z21X|F0MPxgF]_HJ$^vr","x":-1012,"y":116,"fields":{"Y":650,"X":210,"radius":160,"width":10},"inputs":{"IMAGE":{"block":{"type":"gray_to_rgb","id":"p3ll~3@}zIGvW6edi|%!","inputs":{"IMAGE":{"block":{"type":"numpy_to_pil","id":"|2@J4j%Y]oVb}wjM:+u)","inputs":{"ARRAY":{"block":{"type":"float_to_uint8","id":"sdBUo#w.EaRk*Z3~ki-|","inputs":{"IMAGE":{"block":{"type":"sato_filter","id":"uEv!d/~+j[yYCQ7w[=%G","fields":{"SIGMAS":"range(1, 10, 2)","BLACK_RIDGES":true},"inputs":{"IMAGE":{"block":{"type":"bgr_to_gray","id":"[rxEJCW^{n8.#FLWV,=o","inputs":{"IMAGE":{"block":{"type":"fastNlMeansDenoisingColored","id":"R@(TPv1cBF01C8dwp!5U","fields":{"H":10,"HCOLOR":10},"inputs":{"SRC":{"block":{"type":"read_image","id":"n1iJ[:603n(A!GXlqacj","fields":{"IMAGE_PATH":"retinal.jpg","AS_GRAY":false}}}}}}}}}}}}}}}}}}}}}}}]}}';
         Blockly.serialization.workspaces.load(
           JSON.parse(savedState),
           workspace
@@ -598,11 +573,12 @@
       }
 
       workspace.addChangeListener(updateCode);
-      
+
       window.onload = function () {
         loadWorkspace();
         updateCode();
       };
     </script>
-  </body>
+</body>
+
 </html>
