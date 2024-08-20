@@ -49,6 +49,6 @@ numpy_lib.add_preset_with_override_metadata("rgb", {"color_channel": "rgb", "cha
 numpy_lib.add_preset_with_override_metadata("gray", {"color_channel": "gray", "channel_order": "none"})
 numpy_lib.add_preset_with_override_metadata("rgb_uint8", {"color_channel": "rgb", "channel_order": "channel last",
                                                           "image_data_type": "uint8"})
-numpy_lib.add_preset_with_override_metadata('gray_uint8', {"color_channel": "gray", "channel_order": "none",
-                                            'image_data_type': 'uint8'})
+numpy_lib.add_preset_with_override_metadata('gray_float64(0to1)', {"color_channel": "gray", "channel_order": "none",
+                                            'image_data_type': 'float64(0to1)'})
 preset_table.add_lib_metadata("numpy", numpy_lib)
