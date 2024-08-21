@@ -27,7 +27,7 @@ class Metadata4Library:
         self.metadata = metadata
         self.preset_with_override_metadata: Dict[str, Union[PossibleMetadata, List[PossibleMetadata]]] = {}
 
-    def add_preset_with_override_metadata(self, preset:str, metadata:PossibleMetadata):
+    def add_preset_with_override_metadata(self, preset: str, metadata: Union[PossibleMetadata, List[PossibleMetadata]]):
         self.preset_with_override_metadata[preset] = metadata
 
     def get_possible_metadata(self, preset):

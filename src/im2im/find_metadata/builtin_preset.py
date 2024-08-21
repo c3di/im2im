@@ -28,6 +28,7 @@ pil_lib = Metadata4Library(
     {"data_representation": "PIL.Image", "minibatch_input": False, "image_data_type": "uint8", "device": "cpu"})
 pil_lib.add_preset_with_override_metadata("rgb_uint8", {"color_channel": "rgb", "channel_order": "channel last"})
 pil_lib.add_preset_with_override_metadata("gray_uint8", {"color_channel": "gray", "channel_order": "none"})
+pil_lib.add_preset_with_override_metadata('rgb_gray', [pil_lib.get_possible_metadata('rgb_uint8'), pil_lib.get_possible_metadata('gray_uint8')])
 preset_table.add_lib_metadata("pil", pil_lib)
 
 torch_lib = Metadata4Library(
