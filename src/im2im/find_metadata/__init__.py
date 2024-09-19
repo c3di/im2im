@@ -32,7 +32,7 @@ def find_closest_match(all_possible: Union[PossibleMetadata, List[PossibleMetada
     if not isinstance(all_possible, list):
         all_possible = [all_possible]
     for possible_metadata in all_possible:
-        matched_metadata = {'data_representation': target['data_representation']}
+        matched_metadata = {'data_representation': possible_metadata['data_representation']}
         for key, value in target.items():
             if key == 'data_representation':
                 continue
