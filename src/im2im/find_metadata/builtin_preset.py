@@ -20,7 +20,8 @@ skimage_lib.add_preset_with_override_metadata("gray", {"color_channel": "gray", 
 skimage_lib.add_preset_with_override_metadata("before_gaussian", [
     skimage_lib.get_possible_metadata("gray"), skimage_lib.get_possible_metadata("rgb")])
 
-skimage_lib.add_preset_with_override_metadata("before_equalize_adapthist", skimage_lib.get_possible_metadata("before_gaussian"))
+skimage_lib.add_preset_with_override_metadata("before_equalize_adapthist",
+                                              skimage_lib.get_possible_metadata("before_gaussian"))
 
 preset_table.add_lib_metadata("skimage", skimage_lib)
 
@@ -28,7 +29,8 @@ pil_lib = Metadata4Library(
     {"data_representation": "PIL.Image", "minibatch_input": False, "image_data_type": "uint8", "device": "cpu"})
 pil_lib.add_preset_with_override_metadata("rgb_uint8", {"color_channel": "rgb", "channel_order": "channel last"})
 pil_lib.add_preset_with_override_metadata("gray_uint8", {"color_channel": "gray", "channel_order": "none"})
-pil_lib.add_preset_with_override_metadata('rgb_gray', [pil_lib.get_possible_metadata('rgb_uint8'), pil_lib.get_possible_metadata('gray_uint8')])
+pil_lib.add_preset_with_override_metadata('rgb_gray', [pil_lib.get_possible_metadata('rgb_uint8'),
+                                                       pil_lib.get_possible_metadata('gray_uint8')])
 preset_table.add_lib_metadata("pil", pil_lib)
 
 torch_lib = Metadata4Library(
@@ -50,8 +52,14 @@ numpy_lib.add_preset_with_override_metadata("rgb", {"color_channel": "rgb", "cha
 numpy_lib.add_preset_with_override_metadata("gray", {"color_channel": "gray", "channel_order": "none"})
 numpy_lib.add_preset_with_override_metadata("rgb_uint8", {"color_channel": "rgb", "channel_order": "channel last",
                                                           "image_data_type": "uint8"})
-numpy_lib.add_preset_with_override_metadata("uint8", [{"color_channel": "rgb", "channel_order": "channel last", "image_data_type": "uint8"},
-                                                         {"color_channel": "gray", "channel_order": "none", "image_data_type": "uint8"}])
+numpy_lib.add_preset_with_override_metadata("uint8", [
+    {"color_channel": "rgb", "channel_order": "channel last", "image_data_type": "uint8"},
+    {"color_channel": "gray", "channel_order": "none", "image_data_type": "uint8"}])
 numpy_lib.add_preset_with_override_metadata('gray_float64(0to1)', {"color_channel": "gray", "channel_order": "none",
-                                            'image_data_type': 'float64(0to1)'})
+                                                                   'image_data_type': 'float64(0to1)'})
+numpy_lib.add_preset_with_override_metadata('float64(0to1)', [{"color_channel": "gray", "channel_order": "none",
+                                                               'image_data_type': 'float64(0to1)'}, {
+                                                                  "color_channel": "rgb",
+                                                                  "channel_order": "channel last",
+                                                                  'image_data_type': 'float64(0to1)'}])
 preset_table.add_lib_metadata("numpy", numpy_lib)
