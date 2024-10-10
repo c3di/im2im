@@ -1,7 +1,5 @@
 # im2im: Automatically Converting In-Memory Image Representations using A Knowledge Graph Approach
 
-**NOTE**: For the purposes of double-blind review, we have kept the repository private and temporarily removed the package from PyPI. We recommend downloading the repository locally from the Anonymized GitHub site and installing it manually. We apologize for any inconvenience and will republish the package once the review process is complete.
-
 **NOTE**: In the anonymous version, when clicking on links (such as those in the README), you may experience longer loading times on the anonymized GitHub site. We recommend navigating to the file manually and then clicking to open it directly
 
 ---
@@ -21,13 +19,10 @@ Im2im was developed for the use in Visual Programming Language (VPLs) for image 
 ## Installation
 
 **NOTE**: For the purposes of double-blind review, we have kept the repository private and temporarily removed the package from PyPI. 
-
 We recommend downloading the package from the "dist" folder and installing it using the following command:
-
 ```python
 pip install /path_to/im2im-0.0.5-py3-none-any.whl
 ```
-
 We apologize for any inconvenience and will republish the package once the review process is complete.
 
 ~~Install the package via pip:~~
