@@ -1,5 +1,11 @@
 # im2im: Automatically Converting In-Memory Image Representations using A Knowledge Graph Approach
 
+**NOTE**: For the purposes of double-blind review, we have kept the repository private and temporarily removed the package from PyPI. We recommend downloading the repository locally from the Anonymized GitHub site and installing it manually. We apologize for any inconvenience and will republish the package once the review process is complete.
+
+**NOTE**: In the anonymous version, when clicking on links (such as those in the README), you may experience longer loading times on the anonymized GitHub site. We recommend navigating to the file manually and then clicking to open it directly
+
+---
+
 [![PyPI - Version](https://img.shields.io/pypi/v/im2im.svg)](https://pypi.org/project/im2im/)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/im2im)](https://pypi.org/project/im2im/)
 [![Downloads](https://static.pepy.tech/badge/im2im)](https://pepy.tech/project/im2im)
