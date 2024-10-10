@@ -20,7 +20,18 @@ Im2im was developed for the use in Visual Programming Language (VPLs) for image 
 
 ## Installation
 
-Install the package via pip:
+**NOTE**: For the purposes of double-blind review, we have kept the repository private and temporarily removed the package from PyPI. 
+
+We recommend downloading the package from the "dist" folder and installing it using the following command:
+
+```python
+pip install /path_to/im2im-0.0.5-py3-none-any.whl
+```
+
+We apologize for any inconvenience and will republish the package once the review process is complete.
+
+~~Install the package via pip:~~
+
 ```bash
 pip install im2im
 ```
