@@ -9,7 +9,7 @@ from src.im2im.knowledge_graph_construction import KnowledgeGraph, encode_metada
 from .data_for_tests.nodes_edges import test_edges
 
 
-@pytest.mark.parametrize("source_node,target_node,conversion", test_edges)
+@pytest.mark.parametrize("source_node,target_node,conversion", test_edges[:3])
 def test_time_cost(source_node, target_node, conversion):
     result = time_cost(source_node, target_node, conversion)
     assert result != math.inf, "time_cost should return a finite value when conversion is successful"

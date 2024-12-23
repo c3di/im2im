@@ -44,7 +44,8 @@ def test_conversion_path(code_generator):
     code_generator.knowledge_graph.get_shortest_path.assert_called_once_with(
         {"source": "source_metadata"},
         {"target": "target_metadata"},
-        code_generator._goal_function_for_AStar,
+        code_generator.cost_on_edge,
+        True,
     )
     assert (
         actual == expected_path
@@ -116,18 +117,3 @@ def test_generate_conversion_using_cache(code_generator):
     assert (
         code_from_cache == expected_code
     ), f"Expected {expected_code}, but got {str(code_from_cache)}"
-
-
-def test_config_astar_goal_function(code_generator):
-    cpu_penalty = 1.0
-    gpu_penalty = 2.0
-
-    code_generator.config_astar_goal_function(cpu_penalty, gpu_penalty)
-
-    assert cpu_penalty == code_generator._cpu_penalty, f'Expected {cpu_penalty}, but got {code_generator._cpu_penalty}'
-    assert gpu_penalty == code_generator._gpu_penalty, f'Expected {gpu_penalty}, but got {code_generator._gpu_penalty}'
-
-    actual_source = inspect.getsource(code_generator._normalize_time_cost).strip()
-    lambda_match = re.search(r'lambda\s*[^\:]+:\s*0', actual_source)
-    actual_lambda_expr = lambda_match.group()
-    assert actual_lambda_expr == "lambda u, v: 0", f"Expected lambda u, v: 0, but got {code_generator._normalize_time_cost}"

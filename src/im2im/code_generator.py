@@ -1,6 +1,14 @@
 from typing import Union
+
+from .knowledge_graph_construction import encode_metadata, Metadata, Conversion
 from .util import extract_func_body
-from .knowledge_graph_construction import encode_metadata, Metadata
+
+
+def cost_on_edge(u, v, conversion: Conversion, gpu_penalty: float = 0.5) -> (float, float):
+    is_lossy = conversion[2] if len(conversion) > 2 else False
+    is_on_gpu = conversion[3] if len(conversion) > 3 else False
+    step_cost = 1
+    return float(is_lossy), step_cost + gpu_penalty * float(is_on_gpu)
 
 
 class ConvertCodeGenerator:
@@ -8,13 +16,15 @@ class ConvertCodeGenerator:
     def __init__(self, knowledge_graph):
         self._knowledge_graph = knowledge_graph
         self._cache = {}
-        self._cpu_penalty = 0
-        self._gpu_penalty = 0
+        self._gpu_penalty = 0.5
         self._normalize_time_cost = lambda u, v: 0
 
-    def config_astar_goal_function(self, cpu_penalty: float, gpu_penalty: float):
-        self._cpu_penalty = cpu_penalty
+    @property
+    def gpu_penalty(self, gpu_penalty: float):
         self._gpu_penalty = gpu_penalty
+
+    def cost_on_edge(self, u, v, conversion: Conversion) -> (float, float):
+        return cost_on_edge(u, v, conversion, self._gpu_penalty)
 
     @property
     def knowledge_graph(self):
@@ -24,15 +34,17 @@ class ConvertCodeGenerator:
     def knowledge_graph(self, value):
         self._knowledge_graph = value
 
-    def get_convert_path(self, source_metadata: Metadata, target_metadata: Metadata):
-        return self.knowledge_graph.get_shortest_path(source_metadata, target_metadata, self._goal_function_for_AStar)
+    def get_convert_path(self, source_metadata: Metadata, target_metadata: Metadata, allow_lossy_fallback=True):
+        return self.knowledge_graph.get_shortest_path(source_metadata, target_metadata, self.cost_on_edge,
+                                                      allow_lossy_fallback)
 
     def get_conversion(
-        self,
-        source_var_name: str,
-        source_metadata: Metadata,
-        target_var_name: str,
-        target_metadata: Metadata,
+            self,
+            source_var_name: str,
+            source_metadata: Metadata,
+            target_var_name: str,
+            target_metadata: Metadata,
+            allow_lossy_fallback=True,
     ) -> Union[str, None]:
         """
         Generates Python code as a string that performs data conversion from a source variable to a target variable
@@ -52,11 +64,11 @@ class ConvertCodeGenerator:
         source_encode_str = encode_metadata(source_metadata)
         target_encode_str = encode_metadata(target_metadata)
         if (source_encode_str, target_encode_str) in self._cache:
-            cvt_path = self._cache[(source_encode_str, target_encode_str)]
+            cvt_path = self._cache[(source_encode_str, target_encode_str, allow_lossy_fallback)]
         else:
             cvt_path = self.knowledge_graph.get_shortest_path(source_metadata, target_metadata,
-                                                              self._goal_function_for_AStar)
-            self._cache[(source_encode_str, target_encode_str)] = cvt_path
+                                                              self.cost_on_edge, allow_lossy_fallback)
+            self._cache[(source_encode_str, target_encode_str, allow_lossy_fallback)] = cvt_path
         if cvt_path is None:
             result = None
         elif len(cvt_path) == 1:
@@ -68,7 +80,7 @@ class ConvertCodeGenerator:
         return result
 
     def _get_conversion_multiple_steps(
-        self, cvt_path_in_kg, source_var_name, target_var_name
+            self, cvt_path_in_kg, source_var_name, target_var_name
     ) -> str:
         imports = set()
         main_body = []
@@ -85,7 +97,7 @@ class ConvertCodeGenerator:
         return (
             "\n".join(main_body)
             if len(imports) == 0
-            else "\n".join(imports) + "\n" + "\n".join(main_body)
+            else "\n".join(sorted(imports)) + "\n" + "\n".join(main_body)
         )
 
     def _get_conversion_per_step(self, source, target, arg, return_name):
@@ -93,11 +105,3 @@ class ConvertCodeGenerator:
         imports = conversion_on_edge[0]
         main_body = extract_func_body(conversion_on_edge[1], arg, return_name)
         return imports, main_body
-
-    def _goal_function_for_AStar(self, u, v, edge_attributes):
-        step_cost = 1
-        total_cost = (step_cost +
-                      self._cpu_penalty +
-                      self._gpu_penalty +
-                      self._normalize_time_cost(u, v))
-        return total_cost

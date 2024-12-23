@@ -87,9 +87,9 @@ class KnowledgeGraphConstructor:
             if not can_use_factories_in_cluster(source, target):
                 continue
             for factory in factories:
-                function = factory(source, target)
-                if function is not None:
-                    self._add_edge(source, target, function, factory)
+                conversion = factory(source, target)
+                if conversion is not None:
+                    self._add_edge(source, target, conversion, factory)
 
     def _create_edges_from_manual_annotation(
         self, list_of_conversion_for_metadata_pair: List[ConversionForMetadataPair]

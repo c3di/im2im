@@ -75,14 +75,14 @@ def channel_first_rgb_to_gray(source_metadata, target_metadata) -> Conversion:
     type_in = var.dtype
     weights = np.array([0.299, 0.587, 0.114]).reshape((1, 3, 1, 1))
     var = np.sum(var * weights, axis=1, keepdims=True)
-    return var.astype(type_in)""")
+    return var.astype(type_in)""", True)
         # [3, H, W] -> [1, H, W]
         return (
             "import numpy as np",
             """def convert(var):
     type_in = var.dtype
     var = np.sum(var * np.array([0.299, 0.587, 0.114]).reshape(3, 1, 1), axis=0, keepdims=True)
-    return var.astype(type_in)""")
+    return var.astype(type_in)""", True)
 
 
 def channel_first_bgr_to_gray(source_metadata, target_metadata) -> Conversion:
@@ -100,14 +100,14 @@ def channel_first_bgr_to_gray(source_metadata, target_metadata) -> Conversion:
     type_in = var.dtype
     weights = np.array([0.114, 0.587, 0.299]).reshape((1, 3, 1, 1))
     var = np.sum(var * weights, axis=1, keepdims=True)
-    return var.astype(type_in)""")
+    return var.astype(type_in)""", True)
         # [3, H, W] -> [1, H, W]
         return (
             "import numpy as np",
             """def convert(var):
     type_in = var.dtype
     var = np.sum(var * np.array([0.114, 0.587, 0.299]).reshape(3, 1, 1), axis=0)
-    return var.astype(type_in)""")
+    return var.astype(type_in)""", True)
 
 
 def channel_first_gray_to_rgb_or_bgr(source_metadata, target_metadata) -> Conversion:
@@ -156,14 +156,14 @@ def channel_last_rgb_to_gray(source_metadata, target_metadata) -> Conversion:
                 """def convert(var):
     type_in = var.dtype
     var = np.expand_dims(np.dot(var[..., :3], [0.299, 0.587, 0.114]), axis=-1)
-    return var.astype(type_in)""")
+    return var.astype(type_in)""", True)
         # [H, W, 3] -> [H, W, 1]
         return (
             "import numpy as np",
             """def convert(var):
     type_in = var.dtype
     var = np.expand_dims(np.dot(var, [0.299, 0.587, 0.114]), axis=-1)
-    return var.astype(type_in)""")
+    return var.astype(type_in)""", True)
 
 
 def channel_last_bgr_to_gray(source_metadata, target_metadata) -> Conversion:
@@ -176,7 +176,7 @@ def channel_last_bgr_to_gray(source_metadata, target_metadata) -> Conversion:
             """def convert(var):
     type_in = var.dtype
     var = np.expand_dims(np.dot(var[..., :3], [0.114, 0.587, 0.299]), axis=-1)
-    return var.astype(type_in)""")
+    return var.astype(type_in)""", True)
 
 
 def channel_last_gray_to_rgb_or_gbr(source_metadata, target_metadata) -> Conversion:
@@ -277,7 +277,7 @@ def image_data_to_uint8_full_range(source_metadata, target_metadata) -> Conversi
                                                        "float32(0to1)", "float64(0to1)", "double(0to1)"]
             and target_metadata.get("image_data_type") == "uint8"
     ):
-        return "import skimage as ski", "def convert(var):\n return ski.util.img_as_ubyte(var)",
+        return "import skimage as ski", "def convert(var):\n return ski.util.img_as_ubyte(var)", True
 
 
 def image_data_to_uint16_full_range(source_metadata, target_metadata) -> Conversion:
@@ -286,7 +286,8 @@ def image_data_to_uint16_full_range(source_metadata, target_metadata) -> Convers
                                                        "float32(0to1)", "float64(0to1)", "double(0to1)"]
             and target_metadata.get("image_data_type") == "uint16"
     ):
-        return "import skimage as ski", "def convert(var):\n return ski.util.img_as_uint(var)",
+        is_lossy = source_metadata.get("image_data_type") in ["uint32", "int8", "int16", "int32"]
+        return "import skimage as ski", "def convert(var):\n return ski.util.img_as_uint(var)", is_lossy
 
 
 def image_data_to_int16_full_range(source_metadata, target_metadata) -> Conversion:
@@ -296,7 +297,8 @@ def image_data_to_int16_full_range(source_metadata, target_metadata) -> Conversi
                                                        "float32(0to1)", "float64(0to1)", "double(0to1)"]
             and target_metadata.get("image_data_type") == "int16"
     ):
-        return "import skimage as ski", "def convert(var):\n return ski.util.img_as_int(var)",
+        is_lossy = source_metadata.get("image_data_type") in ["uint16", "uint32", "int32"]
+        return "import skimage as ski", "def convert(var):\n return ski.util.img_as_int(var)", is_lossy
 
 
 def convert_image_dtype_float_to_uint8(source_metadata, target_metadata) -> Conversion:
@@ -305,7 +307,7 @@ def convert_image_dtype_float_to_uint8(source_metadata, target_metadata) -> Conv
             and target_metadata.get("image_data_type") == "uint8"
     ):
         return (
-            "import numpy as np", "def convert(var):\n return var.astype(np.uint8)",
+            "import numpy as np", "def convert(var):\n return var.astype(np.uint8)", True
         )
 
 
@@ -331,8 +333,7 @@ dtype_float_minus1_to_1_mapping = {
 def convert_image_dtype_float_to_float(source_metadata, target_metadata) -> Conversion:
     if is_differ_value_for_key(source_metadata, target_metadata, "image_data_type"):
         for float_type_mapping in [dtype_float_mapping, dtype_float_0_to_1_mapping, dtype_float_minus1_to_1_mapping]:
-            if source_metadata["image_data_type"] in float_type_mapping and target_metadata[
-                "image_data_type"] in float_type_mapping:
+            if source_metadata["image_data_type"] in float_type_mapping and target_metadata["image_data_type"] in float_type_mapping:
                 return (
                     "import numpy as np",
                     f"def convert(var):\n return var.astype({float_type_mapping[target_metadata['image_data_type']]})",
@@ -353,14 +354,6 @@ def image_data_float32_minus1_1_to_float32_0_1(source_metadata, target_metadata)
             and target_metadata.get("image_data_type") == "float32(0to1)"
     ):
         return "", "def convert(var):\n return var * 0.5 + 0.5"
-
-
-def image_data_integer_to_float32_minus1_to_1(source_metadata, target_metadata) -> Conversion:
-    if (
-            source_metadata.get("image_data_type") in ["int8", "int16", "int32"]
-            and target_metadata.get("image_data_type") == "float32(-1to1)"
-    ):
-        return "import skimage as ski", "def convert(var):\n return ski.util.img_as_float32(var)",
 
 
 def image_data_float32_0_1_to_float32_minus1_1(source_metadata, target_metadata) -> Conversion:
@@ -412,7 +405,6 @@ factories_cluster_for_numpy: FactoriesCluster = (
         convert_image_dtype_float_to_uint8,
         convert_image_dtype_float_to_float,
         image_data_unsigned_integer_to_float32_0_to_1,
-        image_data_integer_to_float32_minus1_to_1,
         image_data_float32_minus1_1_to_float32_0_1,
         image_data_unsigned_integer_to_float64_0_to_1,
         image_data_integer_to_float64_minus1_to_1,
@@ -437,7 +429,7 @@ factories_for_opencv_metadata_pair: list[ConversionForMetadataPair] = [
             "minibatch_input": False,
             "image_data_type": 'uint8',
             "device": 'cpu',
-        }, ('import cv2', 'def convert(var):\n  return cv2.cvtColor(var, cv2.COLOR_RGB2GRAY)')),
+        }, ('import cv2', 'def convert(var):\n  return cv2.cvtColor(var, cv2.COLOR_RGB2GRAY)', True)),
     (
         {
             "data_representation": "numpy.ndarray",
@@ -454,7 +446,7 @@ factories_for_opencv_metadata_pair: list[ConversionForMetadataPair] = [
             "minibatch_input": False,
             "image_data_type": 'uint8',
             "device": 'cpu',
-        }, ('import cv2', 'def convert(var):\n  return cv2.cvtColor(var, cv2.COLOR_BGR2GRAY)')),
+        }, ('import cv2', 'def convert(var):\n  return cv2.cvtColor(var, cv2.COLOR_BGR2GRAY)', True)),
     (
         {
             "data_representation": "numpy.ndarray",

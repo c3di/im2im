@@ -22,14 +22,16 @@ def test_im2im():
 
 def test_get_conversion_code():
     source = get_possible_metadata("numpy.rgb_uint8")
-    target = find_target_metadata(source, "torch.rgb")
+    target = find_target_metadata(source, "torch.gpu")
 
     actual_code = im2im_code("source_image", source, "target_image", target)
-    expected_code = ('import torch\n'
-                     'image = torch.from_numpy(source_image)\n'
-                     'image = image.permute(2, 0, 1)\n'
+    expected_code = ('from PIL import Image\n'
+                     'from torchvision.transforms import functional as F\n'
+                     'image = Image.fromarray(source_image)\n'
+                     'image = F.to_tensor(image)\n'
                      'image = image.unsqueeze(0)\n'
-                     'target_image = image / 255.0')
+                     'target_image = image.cuda()')
+
     assert actual_code == expected_code
 
 

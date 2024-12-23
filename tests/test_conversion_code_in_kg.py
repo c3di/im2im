@@ -4,9 +4,9 @@ import pytest
 import tensorflow as tf
 import torch
 
-from .image_util import is_image_equal, random_test_image_and_expected
 from src.im2im.code_generator import ConvertCodeGenerator
 from src.im2im.knowledge_graph_construction import get_knowledge_graph_constructor
+from .image_util import is_image_equal, random_test_image_and_expected
 
 
 @pytest.fixture(scope="session")
@@ -21,8 +21,22 @@ def assert_exec_of_conversion_code_in_edge(source_metadata, target_metadata, kg)
     edge_data = kg.get_edge_data(source_metadata, target_metadata)
     conversion = edge_data.get('conversion')
     assert conversion is not None, f"No conversion from {source_metadata} to {target_metadata}"
-    assert len(conversion) == 2, (f"Expected two elements in the conversions, but got: {conversion} from"
+    assert len(conversion) >= 2, (f"Expected at least two elements in the conversions, but got: {conversion} from"
                                   f" {source_metadata} to {target_metadata}")
+    assert isinstance(conversion[0], str), (f"Expected the first element of the conversion to be a string, but got:"
+                                            f" {conversion[0]} from {source_metadata} to {target_metadata}")
+    assert isinstance(conversion[1], str), (
+        f"Expected the second element of the conversion to be a string, but got:"
+        f" {conversion[1]} from {source_metadata} to {target_metadata}")
+    if len(conversion) > 2:
+        assert isinstance(conversion[2], bool), (
+            f"Expected the third element of the conversion to be a boolean, but got:"
+            f" {conversion[2]} from {source_metadata} to {target_metadata}")
+    if len(conversion) > 3:
+        assert isinstance(conversion[3], bool), (
+            f"Expected the fourth element of the conversion to be a boolean, but got:"
+            f" {conversion[3]} from {source_metadata} to {target_metadata}")
+
     assert isinstance(conversion[0], str), (f"Expected the first element of the conversion to be a string, but got:"
                                             f" {conversion[0]} from {source_metadata} to {target_metadata}")
     assert isinstance(conversion[1], str), (f"Expected the second element of the conversion to be a string, but got:"
