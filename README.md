@@ -14,6 +14,8 @@
 
 The `im2im` package provides an automated approach for converting in-memory image representations across a variety of image processing libraries, including `scikit-image`, `opencv-python`, `scipy`, `PIL`, `Matplotlib.plt.imshow`, `PyTorch`, `Kornia` and `Tensorflow`. It handles the nuances inherent to each library's image representation, such as data formats (numpy arrays, PIL images, torch tensors, and so on), color channel (RGB or grayscale), channel order (channel first or last or none), device (CPU/GPU), and pixel intensity ranges.
 
+**We aim to identify the conversion code that minimizes information loss and requires the fewest conversion steps, prioritizing CPU execution while applying a configurable penalty for GPU operations. Both the search function and GPU penalty can be adjusted to suit different scenarios.**
+
 Im2im was developed for the use in Visual Programming Language (VPLs) for image processing to completely removes the conversions steps required to manually manage image transformations, drastically improving accessibility, specifically for non-expert users. It also addresses the tension between low-level implementation details necessary for compatibility and the high-level image processing operations that VPLs aim to provide. However, the library is a conventional Python package, and as such, it can also be used by directly invoking its functions from any Python image processing program to automate image conversion steps. Considering the relatively low memory footprint and computational overhead of the system, using the library to simplify conventional Python programming is an interesting option as well. 
 
 
@@ -45,6 +47,16 @@ to_be_converted = np.random.randint(0, 256, (20, 20, 3), dtype=np.uint8)
 converted: Image = im2im(Image(to_be_converted, "numpy.rgb_uint8"), "torch.gpu")
 # Access the converted image data via 'converted.raw_image', which is now a torch tensor with shape (1, 3, 20, 20),
 # in float32 format, normalized to the range [0, 1], and transferred to the GPU.
+
+# the underlying conversion uses the following code:
+# from PIL import Image
+# from torchvision.transforms import functional as F
+# image = Image.fromarray(source_image)
+# image = F.to_tensor(image)
+# image = image.unsqueeze(0)
+# target_image = image.cuda()'
+
+# We aim to identify the conversion code that minimizes information loss and requires the fewest conversion steps, prioritizing CPU execution while applying a configurable penalty for GPU operations. Both the search function and GPU penalty can be adjusted to suit different scenarios.**
 ```
 
 For other APIs like `im2im_code`, please refer to [public APIs](https://github.com/c3di/im2im/blob/main/src/im2im/api.py). 
