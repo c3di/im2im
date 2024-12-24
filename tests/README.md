@@ -8,7 +8,7 @@ numpy.ndarray with shape (20, 20, 3) in uint8 format to torch.tensor with shape 
 
 ```python
 # manual code path
-import torch\n
+import torch
 image = torch.from_numpy(source_image)
 image = image.permute(2, 0, 1)
 image = image.unsqueeze(0)
@@ -20,7 +20,7 @@ from torchvision.transforms import functional as F
 image = Image.fromarray(source_image)
 image = F.to_tensor(image)
 image = image.unsqueeze(0)
-target_image = image.cuda()'
+target_image = image.cuda()
 ```
 
 
