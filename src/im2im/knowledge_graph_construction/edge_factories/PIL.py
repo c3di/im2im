@@ -38,12 +38,12 @@ def can_use_factories_in_cluster(source_metadata, target_metadata):
 
 def rgba_to_rgb(source_metadata, target_metadata) -> Conversion:
     if source_metadata.get("color_channel") == "rgba" and target_metadata.get("color_channel") == "rgb":
-        return "", 'def convert(var):\n  return var.convert("RGB")', True
+        return "", 'return var.convert("RGB")', True
 
 
 def rgba_to_graya(source_metadata, target_metadata) -> Conversion:
     if source_metadata.get("color_channel") == "rgba" and target_metadata.get("color_channel") == "graya":
-        return '', 'def convert(var):\n  return var.convert("LA")', True
+        return '', 'return var.convert("LA")', True
 
 
 factories_cluster_for_pil : FactoriesCluster = (
@@ -54,7 +54,7 @@ factories_cluster_for_pil : FactoriesCluster = (
     ],
 )
 
-pil_graya_or_rgba_rgb_to_gray: Conversion = ('', 'def convert(var):\n  return var.convert("L")', True)
+pil_graya_or_rgba_rgb_to_gray: Conversion = ('', 'return var.convert("L")', True)
 
 factories_for_pil_metadata_pair: list[ConversionForMetadataPair] = [
     (
@@ -124,5 +124,5 @@ factories_for_pil_metadata_pair: list[ConversionForMetadataPair] = [
             "minibatch_input": False,
             "image_data_type": 'uint8',
             "device": 'cpu',
-        }, ('', 'def convert(var):\n  return var.convert("RGB")')),
+        }, ('', 'return var.convert("RGB")')),
 ]

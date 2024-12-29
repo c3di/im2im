@@ -1,6 +1,4 @@
-import inspect
 import os.path
-import re
 from unittest.mock import MagicMock
 
 import pytest

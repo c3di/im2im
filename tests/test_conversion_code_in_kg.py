@@ -4,6 +4,7 @@ import pytest
 import tensorflow as tf
 import torch
 
+from src.im2im import instance_code_template
 from src.im2im.code_generator import ConvertCodeGenerator
 from src.im2im.knowledge_graph_construction import get_knowledge_graph_constructor
 from .image_util import is_image_equal, random_test_image_and_expected
@@ -46,13 +47,12 @@ def assert_exec_of_conversion_code_in_edge(source_metadata, target_metadata, kg)
 
     try:
         source_image, target_image = random_test_image_and_expected(source_metadata, target_metadata)
-        func_name = re.search(r'(?<=def )\w+', conversion[1]).group(0)
+        code = instance_code_template(conversion[1], "source_image", "actual_image")
 
         scope = {}
         scope.update({'source_image': source_image})
         exec(f"""{conversion[0]}
-{conversion[1]}
-actual_image = {func_name}(source_image)""", scope)
+{code}""", scope)
         actual_image = scope.get('actual_image')
     except Exception as e:
         raise AssertionError(f"Failed to execute conversion code from {error_message}") from e

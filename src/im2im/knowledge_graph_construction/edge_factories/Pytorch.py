@@ -49,7 +49,7 @@ def channel_none_to_channel_first(source_metadata, target_metadata) -> Conversio
         source_metadata.get("channel_order") == "none"
         and target_metadata.get("channel_order") == "channel first"
     ):
-        return "", "def convert(var):\n  return var.unsqueeze(0)", False, source_metadata.get("device") == "gpu"
+        return "", "return var.unsqueeze(0)", False, source_metadata.get("device") == "gpu"
 
 
 def channel_none_to_channel_last(source_metadata, target_metadata) -> Conversion:
@@ -57,7 +57,7 @@ def channel_none_to_channel_last(source_metadata, target_metadata) -> Conversion
         source_metadata.get("channel_order") == "none"
         and target_metadata.get("channel_order") == "channel last"
     ):
-        return "", "def convert(var):\n  return var.unsqueeze(-1)", False, source_metadata.get("device") == "gpu"
+        return "", "return var.unsqueeze(-1)", False, source_metadata.get("device") == "gpu"
 
 
 def channel_last_to_none(source_metadata, target_metadata) -> Conversion:
@@ -65,7 +65,7 @@ def channel_last_to_none(source_metadata, target_metadata) -> Conversion:
         source_metadata.get("channel_order") == "channel last"
         and target_metadata.get("channel_order") == "none"
     ):
-        return "", "def convert(var):\n  return var.squeeze(-1)", False, source_metadata.get("device") == "gpu"
+        return "", "return var.squeeze(-1)", False, source_metadata.get("device") == "gpu"
 
 
 def channel_first_to_none(source_metadata, target_metadata) -> Conversion:
@@ -73,7 +73,7 @@ def channel_first_to_none(source_metadata, target_metadata) -> Conversion:
         source_metadata.get("channel_order") == "channel first"
         and target_metadata.get("channel_order") == "none"
     ):
-        return "", "def convert(var):\n  return var.squeeze(0)", False, source_metadata.get("device") == "gpu"
+        return "", "return var.squeeze(0)", False, source_metadata.get("device") == "gpu"
 
 
 def channel_last_to_channel_first(source_metadata, target_metadata) -> Conversion:
@@ -82,8 +82,8 @@ def channel_last_to_channel_first(source_metadata, target_metadata) -> Conversio
         and target_metadata.get("channel_order") == "channel first"
     ):
         if source_metadata.get("minibatch_input"):
-            return "", "def convert(var):\n  return var.permute(0, 3, 1, 2)", False, source_metadata.get("device") == "gpu"
-        return "", "def convert(var):\n  return var.permute(2, 0, 1)", False, source_metadata.get("device") == "gpu"
+            return "", "return var.permute(0, 3, 1, 2)", False, source_metadata.get("device") == "gpu"
+        return "", "return var.permute(2, 0, 1)", False, source_metadata.get("device") == "gpu"
 
 
 def channel_first_to_channel_last(source_metadata, target_metadata) -> Conversion:
@@ -92,22 +92,22 @@ def channel_first_to_channel_last(source_metadata, target_metadata) -> Conversio
         and target_metadata.get("channel_order") == "channel last"
     ):
         if source_metadata.get("minibatch_input"):
-            return "", "def convert(var):\n  return var.permute(0, 2, 3, 1)", False, source_metadata.get("device") == "gpu"
-        return "", "def convert(var):\n  return var.permute(1, 2, 0)", False, source_metadata.get("device") == "gpu"
+            return "", "return var.permute(0, 2, 3, 1)", False, source_metadata.get("device") == "gpu"
+        return "", "return var.permute(1, 2, 0)", False, source_metadata.get("device") == "gpu"
 
 
 def minibatch_true_to_false(source_metadata, target_metadata) -> Conversion:
     if source_metadata.get("minibatch_input") and not target_metadata.get(
         "minibatch_input"
     ):
-        return "", "def convert(var):\n  return var.squeeze(0)", False, source_metadata.get("device") == "gpu"
+        return "", "return var.squeeze(0)", False, source_metadata.get("device") == "gpu"
 
 
 def minibatch_false_to_true(source_metadata, target_metadata) -> Conversion:
     if (not source_metadata.get("minibatch_input")) and target_metadata.get(
         "minibatch_input"
     ):
-        return "", "def convert(var):\n  return var.unsqueeze(0)", False, source_metadata.get("device") == "gpu"
+        return "", "return var.unsqueeze(0)", False, source_metadata.get("device") == "gpu"
 
 
 def channel_first_rgb_to_gray(source_metadata, target_metadata) -> Conversion:
@@ -120,7 +120,7 @@ def channel_first_rgb_to_gray(source_metadata, target_metadata) -> Conversion:
     ):
         return (
             "from torchvision.transforms import functional as v1F",
-            "def convert(var):\n  return v1F.rgb_to_grayscale(var)",
+            "return v1F.rgb_to_grayscale(var)",
             True,
             source_metadata.get("device") == "gpu"
         )
@@ -138,21 +138,21 @@ def channel_first_gray_to_rgb(source_metadata, target_metadata) -> Conversion:
         if source_metadata.get("minibatch_input"):
             return (
                 "",
-                "def convert(var):\n  return var.repeat(1, 3, 1, 1)", False, is_on_gpu
+                "return var.repeat(1, 3, 1, 1)", False, is_on_gpu
             )
         else:
             return (
                 "",
-                "def convert(var):\n  return var.repeat(3, 1, 1)", False, is_on_gpu
+                "return var.repeat(3, 1, 1)", False, is_on_gpu
             )
 
 
 def between_uint8_and_float32_0to1(source_metadata, target_metadata) -> Conversion:
     is_on_gpu = source_metadata.get("device") == "gpu"
     if source_metadata["image_data_type"] == "uint8" and target_metadata["image_data_type"] == "float32(0to1)":
-        return "", "def convert(var):\n  return var / 255.0", False, is_on_gpu
+        return "", "return var / 255.0", False, is_on_gpu
     elif source_metadata["image_data_type"] == "float32(0to1)" and target_metadata["image_data_type"] == "uint8":
-        return "import torch", "def convert(var):\n  return (var * 255).to(torch.uint8)", True, is_on_gpu
+        return "import torch", "return (var * 255).to(torch.uint8)", True, is_on_gpu
 
 def convert_image_dtype(source_metadata, target_metadata) -> Conversion:
     # image dtype conversion involves type convert, intensity range rescale and normalization for float point
@@ -180,7 +180,7 @@ def convert_image_dtype(source_metadata, target_metadata) -> Conversion:
         }
         return (
             "import torch\nfrom torchvision.transforms.v2 import functional as F",
-            f"def convert(var):\n return F.to_dtype(var, {dtype_mapping.get(target_metadata.get('image_data_type'))}, scale=True)",
+            f"return F.to_dtype(var, {dtype_mapping.get(target_metadata.get('image_data_type'))}, scale=True)",
             True,
             source_metadata.get("device") == "gpu"
         )
@@ -191,7 +191,7 @@ def gpu_to_cpu(source_metadata, target_metadata) -> Conversion:
         source_metadata.get("device") == "gpu"
         and target_metadata.get("device") == "cpu"
     ):
-        return "", "def convert(var):\n  return var.cpu()"
+        return "", "return var.cpu()"
 
 
 def cpu_to_gpu(source_metadata, target_metadata) -> Conversion:
@@ -199,7 +199,7 @@ def cpu_to_gpu(source_metadata, target_metadata) -> Conversion:
         source_metadata.get("device") == "cpu"
         and target_metadata.get("device") == "gpu"
     ):
-        return "", "def convert(var):\n  return var.cuda()", False, True
+        return "", "return var.cuda()", False, True
 
 
 factories_cluster_for_Pytorch: FactoriesCluster = (

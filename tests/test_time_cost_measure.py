@@ -18,7 +18,7 @@ def test_time_cost(source_node, target_node, conversion):
 @patch("tests.image_util.random_test_image_and_expected")
 def test_infinite_time_cost(mock_random_test_image):
     mock_random_test_image.side_effect = Exception("Failed to generate image")
-    result = time_cost("source_node", "target_node", ("", "def convert(var):\n  return var"))
+    result = time_cost("source_node", "target_node", ("", "return var"))
     assert result == math.inf, "time_cost should return math.inf when image generation fails"
 
 
@@ -33,7 +33,7 @@ def test_time_cost_to_throw_exception(kg):
     test_edge = list(kg.edges)[1]
 
     with pytest.raises(Exception) as exc_info:
-        time_cost(test_edge[0], test_edge[1], ("", "def convert(var):\n  return torch.from_numpy(var)"))
+        time_cost(test_edge[0], test_edge[1], ("", "return torch.from_numpy(var)"))
 
     assert "name 'torch' is not defined" in str(exc_info.value), \
         "time_cost should raise RuntimeError with the correct message when conversion fails"

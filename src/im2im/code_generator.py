@@ -1,7 +1,7 @@
 from typing import Union
 
 from .knowledge_graph_construction import encode_metadata, Metadata, Conversion
-from .util import extract_func_body
+from .util import instance_code_template
 
 
 def cost_on_edge(u, v, conversion: Conversion, gpu_penalty: float = 0.5) -> (float, float):
@@ -103,5 +103,5 @@ class ConvertCodeGenerator:
     def _get_conversion_per_step(self, source, target, arg, return_name):
         conversion_on_edge = self.knowledge_graph.get_edge_data(source, target)["conversion"]
         imports = conversion_on_edge[0]
-        main_body = extract_func_body(conversion_on_edge[1], arg, return_name)
+        main_body = instance_code_template(conversion_on_edge[1], arg, return_name)
         return imports, main_body

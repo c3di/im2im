@@ -55,9 +55,9 @@ def channel_first_between_bgr_rgb(source_metadata, target_metadata) -> Conversio
             (source_metadata["color_channel"] == "rgb" and target_metadata["color_channel"] == "bgr")):
         if source_metadata["minibatch_input"]:
             # [N, C, H, W]
-            return "import numpy as np", "def convert(var):\n  return var[:, ::-1, :, :]"
+            return "import numpy as np", "return var[:, ::-1, :, :]"
         # [C, H, W]
-        return "import numpy as np", "def convert(var):\n  return var[::-1, :, :]"
+        return "import numpy as np", "return var[::-1, :, :]"
 
 
 def channel_first_rgb_to_gray(source_metadata, target_metadata) -> Conversion:
@@ -71,18 +71,16 @@ def channel_first_rgb_to_gray(source_metadata, target_metadata) -> Conversion:
             # [N, 3, H, W] -> [N, 1, H, W]
             return (
                 "import numpy as np",
-                """def convert(var):
-    type_in = var.dtype
-    weights = np.array([0.299, 0.587, 0.114]).reshape((1, 3, 1, 1))
-    var = np.sum(var * weights, axis=1, keepdims=True)
-    return var.astype(type_in)""", True)
+                """type_in = var.dtype
+weights = np.array([0.299, 0.587, 0.114]).reshape((1, 3, 1, 1))
+var = np.sum(var * weights, axis=1, keepdims=True)
+return var.astype(type_in)""", True)
         # [3, H, W] -> [1, H, W]
         return (
             "import numpy as np",
-            """def convert(var):
-    type_in = var.dtype
-    var = np.sum(var * np.array([0.299, 0.587, 0.114]).reshape(3, 1, 1), axis=0, keepdims=True)
-    return var.astype(type_in)""", True)
+            """type_in = var.dtype
+var = np.sum(var * np.array([0.299, 0.587, 0.114]).reshape(3, 1, 1), axis=0, keepdims=True)
+return var.astype(type_in)""", True)
 
 
 def channel_first_bgr_to_gray(source_metadata, target_metadata) -> Conversion:
@@ -96,18 +94,16 @@ def channel_first_bgr_to_gray(source_metadata, target_metadata) -> Conversion:
             # [N, 3, H, W] -> [N, 1, H, W]
             return (
                 "import numpy as np",
-                """def convert(var):
-    type_in = var.dtype
-    weights = np.array([0.114, 0.587, 0.299]).reshape((1, 3, 1, 1))
-    var = np.sum(var * weights, axis=1, keepdims=True)
-    return var.astype(type_in)""", True)
+                """type_in = var.dtype
+weights = np.array([0.114, 0.587, 0.299]).reshape((1, 3, 1, 1))
+var = np.sum(var * weights, axis=1, keepdims=True)
+return var.astype(type_in)""", True)
         # [3, H, W] -> [1, H, W]
         return (
             "import numpy as np",
-            """def convert(var):
-    type_in = var.dtype
-    var = np.sum(var * np.array([0.114, 0.587, 0.299]).reshape(3, 1, 1), axis=0)
-    return var.astype(type_in)""", True)
+            """type_in = var.dtype
+var = np.sum(var * np.array([0.114, 0.587, 0.299]).reshape(3, 1, 1), axis=0)
+return var.astype(type_in)""", True)
 
 
 def channel_first_gray_to_rgb_or_bgr(source_metadata, target_metadata) -> Conversion:
@@ -121,12 +117,12 @@ def channel_first_gray_to_rgb_or_bgr(source_metadata, target_metadata) -> Conver
             # [N, 1, H, W] -> [N, 3, H, W]
             return (
                 "import numpy as np",
-                "def convert(var):\n  return np.repeat(var, 3, axis=1)",
+                "return np.repeat(var, 3, axis=1)",
             )
         # [1, H, W] -> [3, H, W]
         return (
             "import numpy as np",
-            "def convert(var):\n  return np.repeat(var, 3, axis=0)",
+            "return np.repeat(var, 3, axis=0)",
         )
 
 
@@ -139,10 +135,10 @@ def channel_last_between_bgr_rgb(source_metadata, target_metadata) -> Conversion
             # [N, H, W, C]
             return (
                 "import numpy as np",
-                "def convert(var):\n  return var[:, :, :, ::-1]",
+                "return var[:, :, :, ::-1]",
             )
         # [H, W, C]
-        return "import numpy as np", "def convert(var):\n  return var[:, :, ::-1]"
+        return "import numpy as np", "return var[:, :, ::-1]"
 
 
 def channel_last_rgb_to_gray(source_metadata, target_metadata) -> Conversion:
@@ -153,17 +149,15 @@ def channel_last_rgb_to_gray(source_metadata, target_metadata) -> Conversion:
             # [N, H, W, 3] -> [N, H, W, 1]
             return (
                 "import numpy as np",
-                """def convert(var):
-    type_in = var.dtype
-    var = np.expand_dims(np.dot(var[..., :3], [0.299, 0.587, 0.114]), axis=-1)
-    return var.astype(type_in)""", True)
+                """type_in = var.dtype
+var = np.expand_dims(np.dot(var[..., :3], [0.299, 0.587, 0.114]), axis=-1)
+return var.astype(type_in)""", True)
         # [H, W, 3] -> [H, W, 1]
         return (
             "import numpy as np",
-            """def convert(var):
-    type_in = var.dtype
-    var = np.expand_dims(np.dot(var, [0.299, 0.587, 0.114]), axis=-1)
-    return var.astype(type_in)""", True)
+            """type_in = var.dtype
+var = np.expand_dims(np.dot(var, [0.299, 0.587, 0.114]), axis=-1)
+return var.astype(type_in)""", True)
 
 
 def channel_last_bgr_to_gray(source_metadata, target_metadata) -> Conversion:
@@ -173,10 +167,9 @@ def channel_last_bgr_to_gray(source_metadata, target_metadata) -> Conversion:
         # [N, H, W, 3] -> [N, H, W, 1] or [H, W, 3] -> [H, W, 1]
         return (
             "import numpy as np",
-            """def convert(var):
-    type_in = var.dtype
-    var = np.expand_dims(np.dot(var[..., :3], [0.114, 0.587, 0.299]), axis=-1)
-    return var.astype(type_in)""", True)
+            """type_in = var.dtype
+var = np.expand_dims(np.dot(var[..., :3], [0.114, 0.587, 0.299]), axis=-1)
+return var.astype(type_in)""", True)
 
 
 def channel_last_gray_to_rgb_or_gbr(source_metadata, target_metadata) -> Conversion:
@@ -190,12 +183,12 @@ def channel_last_gray_to_rgb_or_gbr(source_metadata, target_metadata) -> Convers
             # [N, H, W, 1] -> [N, H, W, 3]
             return (
                 "import numpy as np",
-                "def convert(var):\n  return np.repeat(var, 3, axis=-1)",
+                "return np.repeat(var, 3, axis=-1)",
             )
         # [H, W, 1] -> [H, W, 3]
         return (
             "import numpy as np",
-            "def convert(var):\n  return np.repeat(var, 3, axis=2)",
+            "return np.repeat(var, 3, axis=2)",
         )
 
 
@@ -203,9 +196,9 @@ def channel_last_to_channel_first(source_metadata, target_metadata) -> Conversio
     if source_metadata['channel_order'] == 'channel last' and target_metadata['channel_order'] == 'channel first':
         if source_metadata['minibatch_input']:
             # [N, H, W, C] -> [N, C, H, W]
-            return "", "def convert(var):\n  return var.transpose(0, 3, 1, 2)"
+            return "", "return var.transpose(0, 3, 1, 2)"
         # [H, W, C] -> [C, H, W]
-        return "", "def convert(var):\n  return var.transpose(2, 0, 1)"
+        return "", "return var.transpose(2, 0, 1)"
 
 
 def channel_last_to_channel_none(source_metadata, target_metadata) -> Conversion:
@@ -213,50 +206,50 @@ def channel_last_to_channel_none(source_metadata, target_metadata) -> Conversion
     # check color channel
     if source_metadata['channel_order'] == 'channel last' and target_metadata['channel_order'] == 'none':
         # [N, H, W, 1] -> [N, H, W] or [H, W, 1] -> [H, W]
-        return "", "def convert(var):\n  return var.squeeze(-1)"
+        return "", "return var.squeeze(-1)"
 
 
 def channel_first_to_channel_last(source_metadata, target_metadata) -> Conversion:
     if source_metadata['channel_order'] == 'channel first' and target_metadata['channel_order'] == 'channel last':
         if source_metadata['minibatch_input']:
             # [N, C, H, W] -> [N, H, W, C]
-            return "", "def convert(var):\n  return var.transpose(0, 2, 3, 1)"
+            return "", "return var.transpose(0, 2, 3, 1)"
         # [C, H, W] -> [H, W, C]
-        return "", "def convert(var):\n  return var.transpose(1, 2, 0)"
+        return "", "return var.transpose(1, 2, 0)"
 
 
 def channel_first_to_channel_none(source_metadata, target_metadata) -> Conversion:
     if source_metadata['channel_order'] == 'channel first' and target_metadata['channel_order'] == 'none':
         if source_metadata['minibatch_input']:
             # [N, 1, H, W] -> [N, H, W]
-            return "", "def convert(var):\n  return var.squeeze(1)"
+            return "", "return var.squeeze(1)"
         # [1, H, W] -> [H, W]
-        return "", "def convert(var):\n  return var.squeeze(0)"
+        return "", "return var.squeeze(0)"
 
 
 def channel_none_to_channel_first(source_metadata, target_metadata) -> Conversion:
     if source_metadata['channel_order'] == 'none' and target_metadata['channel_order'] == 'channel first':
         if source_metadata['minibatch_input']:
             # [N, H, W] -> [N, 1, H, W]
-            return "import numpy as np", "def convert(var):\n  return np.expand_dims(var, axis=1)"
+            return "import numpy as np", "return np.expand_dims(var, axis=1)"
         # [H, W] -> [1, H, W]
-        return "import numpy as np", "def convert(var):\n  return np.expand_dims(var, axis=0)"
+        return "import numpy as np", "return np.expand_dims(var, axis=0)"
 
 
 def channel_none_to_channel_last(source_metadata, target_metadata) -> Conversion:
     if source_metadata['channel_order'] == 'none' and target_metadata['channel_order'] == 'channel last':
         # [N, H, W] -> [N, H, W, 1] or [H, W] -> [H, W, 1]
-        return "import numpy as np", "def convert(var):\n  return np.expand_dims(var, axis=-1)"
+        return "import numpy as np", "return np.expand_dims(var, axis=-1)"
 
 
 def minibatch_true_to_false(source_metadata, target_metadata) -> Conversion:
     if source_metadata['minibatch_input'] and not target_metadata['minibatch_input']:
-        return "", "def convert(var):\n  return var[0]"
+        return "", "return var[0]"
 
 
 def minibatch_false_to_true(source_metadata, target_metadata) -> Conversion:
     if not source_metadata['minibatch_input'] and target_metadata['minibatch_input']:
-        return "import numpy as np", "def convert(var):\n  return var[np.newaxis, ...]"
+        return "import numpy as np", "return var[np.newaxis, ...]"
 
 
 # https://numpy.org/doc/stable/user/basics.types.html
@@ -277,7 +270,7 @@ def image_data_to_uint8_full_range(source_metadata, target_metadata) -> Conversi
                                                        "float32(0to1)", "float64(0to1)", "double(0to1)"]
             and target_metadata.get("image_data_type") == "uint8"
     ):
-        return "import skimage as ski", "def convert(var):\n return ski.util.img_as_ubyte(var)", True
+        return "import skimage as ski", "return ski.util.img_as_ubyte(var)", True
 
 
 def image_data_to_uint16_full_range(source_metadata, target_metadata) -> Conversion:
@@ -287,7 +280,7 @@ def image_data_to_uint16_full_range(source_metadata, target_metadata) -> Convers
             and target_metadata.get("image_data_type") == "uint16"
     ):
         is_lossy = source_metadata.get("image_data_type") in ["uint32", "int8", "int16", "int32"]
-        return "import skimage as ski", "def convert(var):\n return ski.util.img_as_uint(var)", is_lossy
+        return "import skimage as ski", "return ski.util.img_as_uint(var)", is_lossy
 
 
 def image_data_to_int16_full_range(source_metadata, target_metadata) -> Conversion:
@@ -298,7 +291,7 @@ def image_data_to_int16_full_range(source_metadata, target_metadata) -> Conversi
             and target_metadata.get("image_data_type") == "int16"
     ):
         is_lossy = source_metadata.get("image_data_type") in ["uint16", "uint32", "int32"]
-        return "import skimage as ski", "def convert(var):\n return ski.util.img_as_int(var)", is_lossy
+        return "import skimage as ski", "return ski.util.img_as_int(var)", is_lossy
 
 
 def convert_image_dtype_float_to_uint8(source_metadata, target_metadata) -> Conversion:
@@ -307,7 +300,7 @@ def convert_image_dtype_float_to_uint8(source_metadata, target_metadata) -> Conv
             and target_metadata.get("image_data_type") == "uint8"
     ):
         return (
-            "import numpy as np", "def convert(var):\n return var.astype(np.uint8)", True
+            "import numpy as np", "return var.astype(np.uint8)", True
         )
 
 
@@ -336,7 +329,8 @@ def convert_image_dtype_float_to_float(source_metadata, target_metadata) -> Conv
             if source_metadata["image_data_type"] in float_type_mapping and target_metadata["image_data_type"] in float_type_mapping:
                 return (
                     "import numpy as np",
-                    f"def convert(var):\n return var.astype({float_type_mapping[target_metadata['image_data_type']]})",
+                    f"return var.astype({float_type_mapping[target_metadata['image_data_type']]})",
+                    float_type_mapping.index(target_metadata["image_data_type"] == 0)
                 )
 
 
@@ -345,7 +339,7 @@ def image_data_unsigned_integer_to_float32_0_to_1(source_metadata, target_metada
             source_metadata.get("image_data_type") in ["uint8", "uint16", "uint32"]
             and target_metadata.get("image_data_type") == "float32(0to1)"
     ):
-        return "import skimage as ski", "def convert(var):\n return ski.util.img_as_float32(var)",
+        return "import skimage as ski", "return ski.util.img_as_float32(var)",
 
 
 def image_data_float32_minus1_1_to_float32_0_1(source_metadata, target_metadata) -> Conversion:
@@ -353,7 +347,7 @@ def image_data_float32_minus1_1_to_float32_0_1(source_metadata, target_metadata)
             source_metadata.get("image_data_type") == "float32(-1to1)"
             and target_metadata.get("image_data_type") == "float32(0to1)"
     ):
-        return "", "def convert(var):\n return var * 0.5 + 0.5"
+        return "", "return var * 0.5 + 0.5"
 
 
 def image_data_float32_0_1_to_float32_minus1_1(source_metadata, target_metadata) -> Conversion:
@@ -361,7 +355,7 @@ def image_data_float32_0_1_to_float32_minus1_1(source_metadata, target_metadata)
             source_metadata.get("image_data_type") == "float32(0to1)"
             and target_metadata.get("image_data_type") == "float32(-1to1)"
     ):
-        return "", "def convert(var):\n return var * 2.0 - 1"
+        return "", "return var * 2.0 - 1"
 
 
 def image_data_integer_to_float64_minus1_to_1(source_metadata, target_metadata) -> Conversion:
@@ -369,7 +363,7 @@ def image_data_integer_to_float64_minus1_to_1(source_metadata, target_metadata) 
             source_metadata.get("image_data_type") in ["int8", "int16", "int32"]
             and target_metadata.get("image_data_type") == "float64(-1to1)"
     ):
-        return "import skimage as ski", "def convert(var):\n return ski.util.img_as_float64(var)",
+        return "import skimage as ski", "return ski.util.img_as_float64(var)",
 
 
 def image_data_unsigned_integer_to_float64_0_to_1(source_metadata, target_metadata) -> Conversion:
@@ -377,7 +371,7 @@ def image_data_unsigned_integer_to_float64_0_to_1(source_metadata, target_metada
             source_metadata.get("image_data_type") in ["uint8", "uint16", "uint32"]
             and target_metadata.get("image_data_type") == "float64(0to1)"
     ):
-        return "import skimage as ski", "def convert(var):\n return ski.util.img_as_float64(var)",
+        return "import skimage as ski", "return ski.util.img_as_float64(var)",
 
 
 factories_cluster_for_numpy: FactoriesCluster = (
@@ -429,7 +423,7 @@ factories_for_opencv_metadata_pair: list[ConversionForMetadataPair] = [
             "minibatch_input": False,
             "image_data_type": 'uint8',
             "device": 'cpu',
-        }, ('import cv2', 'def convert(var):\n  return cv2.cvtColor(var, cv2.COLOR_RGB2GRAY)', True)),
+        }, ('import cv2', 'return cv2.cvtColor(var, cv2.COLOR_RGB2GRAY)', True)),
     (
         {
             "data_representation": "numpy.ndarray",
@@ -446,7 +440,7 @@ factories_for_opencv_metadata_pair: list[ConversionForMetadataPair] = [
             "minibatch_input": False,
             "image_data_type": 'uint8',
             "device": 'cpu',
-        }, ('import cv2', 'def convert(var):\n  return cv2.cvtColor(var, cv2.COLOR_BGR2GRAY)', True)),
+        }, ('import cv2', 'return cv2.cvtColor(var, cv2.COLOR_BGR2GRAY)', True)),
     (
         {
             "data_representation": "numpy.ndarray",
@@ -463,7 +457,7 @@ factories_for_opencv_metadata_pair: list[ConversionForMetadataPair] = [
             "minibatch_input": False,
             "image_data_type": 'uint8',
             "device": 'cpu',
-        }, ('import cv2', 'def convert(var):\n  return cv2.cvtColor(var, cv2.COLOR_GRAY2RGB)')),
+        }, ('import cv2', 'return cv2.cvtColor(var, cv2.COLOR_GRAY2RGB)')),
     (
         {
             "data_representation": "numpy.ndarray",
@@ -480,5 +474,5 @@ factories_for_opencv_metadata_pair: list[ConversionForMetadataPair] = [
             "minibatch_input": False,
             "image_data_type": 'uint8',
             "device": 'cpu',
-        }, ('import cv2', 'def convert(var):\n  return cv2.cvtColor(var, cv2.COLOR_GRAY2BGR)')),
+        }, ('import cv2', 'return cv2.cvtColor(var, cv2.COLOR_GRAY2BGR)')),
 ]

@@ -53,7 +53,7 @@ def minibatch_true_to_false(source_metadata, target_metadata) -> Conversion:
     ):
         return (
             "import tensorflow as tf",
-            "def convert(var):\n  return tf.squeeze(var, 0)",
+            "return tf.squeeze(var, 0)",
             False,
             source_metadata.get("device") == "gpu"
         )
@@ -65,7 +65,7 @@ def minibatch_false_to_true(source_metadata, target_metadata) -> Conversion:
     ):
         return (
             "import tensorflow as tf",
-            "def convert(var):\n  return tf.expand_dims(var, 0)",
+            "return tf.expand_dims(var, 0)",
             False,
             source_metadata.get("device") == "gpu"
         )
@@ -78,7 +78,7 @@ def channel_none_to_channel_first(source_metadata, target_metadata) -> Conversio
     ):
         return (
             "import tensorflow as tf",
-            "def convert(var):\n  return tf.expand_dims(var, 0)",
+            "return tf.expand_dims(var, 0)",
             False,
             source_metadata.get("device") == "gpu"
         )
@@ -91,7 +91,7 @@ def channel_none_to_channel_last(source_metadata, target_metadata) -> Conversion
     ):
         return (
             "import tensorflow as tf",
-            "def convert(var):\n  return tf.expand_dims(var, -1)",
+            "return tf.expand_dims(var, -1)",
             False,
             source_metadata.get("device") == "gpu"
         )
@@ -104,7 +104,7 @@ def channel_last_to_none(source_metadata, target_metadata) -> Conversion:
     ):
         return (
             "import tensorflow as tf",
-            "def convert(var):\n  return tf.squeeze(var, -1)",
+            "return tf.squeeze(var, -1)",
             False,
             source_metadata.get("device") == "gpu"
         )
@@ -117,7 +117,7 @@ def channel_first_to_none(source_metadata, target_metadata) -> Conversion:
     ):
         return (
             "import tensorflow as tf",
-            "def convert(var):\n  return tf.squeeze(var, 0)",
+            "return tf.squeeze(var, 0)",
             False,
             source_metadata.get("device") == "gpu"
         )
@@ -131,13 +131,13 @@ def channel_last_to_channel_first(source_metadata, target_metadata) -> Conversio
         if source_metadata.get("minibatch_input"):
             return (
                 "import tensorflow as tf",
-                "def convert(var):\n  return tf.transpose(var, [0, 3, 1, 2])",
+                "return tf.transpose(var, [0, 3, 1, 2])",
                 False,
                 source_metadata.get("device") == "gpu"
             )
         return (
             "import tensorflow as tf",
-            "def convert(var):\n  return tf.transpose(var, [2, 0, 1])",
+            "return tf.transpose(var, [2, 0, 1])",
             False,
             source_metadata.get("device") == "gpu"
         )
@@ -151,13 +151,13 @@ def channel_first_to_channel_last(source_metadata, target_metadata) -> Conversio
         if source_metadata.get("minibatch_input"):
             return (
                 "import tensorflow as tf",
-                "def convert(var):\n  return tf.transpose(var, [0, 2, 3, 1])",
+                "return tf.transpose(var, [0, 2, 3, 1])",
                 False,
                 source_metadata.get("device") == "gpu"
             )
         return (
             "import tensorflow as tf",
-            "def convert(var):\n   return tf.transpose(var, [1, 2, 0])",
+            "return tf.transpose(var, [1, 2, 0])",
             False,
             source_metadata.get("device") == "gpu"
         )
@@ -173,7 +173,7 @@ def channel_last_rgb_to_gray(source_metadata, target_metadata) -> Conversion:
     ):
         return (
             "import tensorflow as tf",
-            "def convert(var):\n  return tf.image.rgb_to_grayscale(var)",
+            "return tf.image.rgb_to_grayscale(var)",
             True,
             source_metadata.get("device") == "gpu"
         )
@@ -192,7 +192,7 @@ def channel_last_gray_to_rgb(source_metadata, target_metadata) -> Conversion:
     ):
         return (
             "import tensorflow as tf",
-            "def convert(var):\n  return tf.image.grayscale_to_rgb(var)",
+            "return tf.image.grayscale_to_rgb(var)",
             False,
             source_metadata.get("device") == "gpu"
         )
@@ -239,7 +239,7 @@ def convert_image_dtype(source_metadata, target_metadata) -> Conversion:
         target_dtype = dtype_mapping.get(target_metadata.get("image_data_type"))
         return (
             "import tensorflow as tf",
-            f"def convert(var):\n return tf.image.convert_image_dtype(var, {target_dtype})",
+            f"return tf.image.convert_image_dtype(var, {target_dtype})",
             is_lossy_conversion(source_metadata.get("image_data_type"), target_metadata.get("image_data_type")),
             source_metadata.get("device") == "gpu"
         )
@@ -252,9 +252,8 @@ def gpu_to_cpu(source_metadata, target_metadata) -> Conversion:
     ):
         return (
             "import tensorflow as tf",
-            """def convert(var):
-    with tf.device('/cpu:0'):
-        return tf.identity(var)""",
+            """with tf.device('/cpu:0'):
+    return tf.identity(var)""",
         )
 
 
@@ -265,11 +264,10 @@ def cpu_to_gpu(source_metadata, target_metadata) -> Conversion:
     ):
         return (
             "import tensorflow as tf",
-            """def convert(var):
-    with tf.device('/device:GPU:0'):
-        return tf.identity(var)""",
-            False,
-            True
+            """with tf.device('/device:GPU:0'):
+    return tf.identity(var)""",
+        False,
+        True
         )
     return None
 
