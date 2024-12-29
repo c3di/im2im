@@ -330,7 +330,7 @@ def convert_image_dtype_float_to_float(source_metadata, target_metadata) -> Conv
                 return (
                     "import numpy as np",
                     f"return var.astype({float_type_mapping[target_metadata['image_data_type']]})",
-                    float_type_mapping.index(target_metadata["image_data_type"] == 0)
+                    list(float_type_mapping.keys()).index(target_metadata["image_data_type"]) == 0
                 )
 
 
