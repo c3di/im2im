@@ -1,4 +1,4 @@
-from .type import MetadataValues, Metadata
+from .type import MetadataValues
 from .util import *
 
 metadata_values: MetadataValues = {

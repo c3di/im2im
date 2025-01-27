@@ -45,7 +45,7 @@ class ConvertCodeGenerator:
             target_var_name: str,
             target_metadata: Metadata,
             allow_lossy_fallback=True,
-    ) -> Union[str, None]:
+    ) -> Union[tuple[str, str], None]:
         """
         Generates Python code as a string that performs data conversion from a source variable to a target variable
          based on the provided metadata.
@@ -81,7 +81,7 @@ class ConvertCodeGenerator:
 
     def _get_conversion_multiple_steps(
             self, cvt_path_in_kg, source_var_name, target_var_name
-    ) -> str:
+    )->tuple[str, str]:
         imports = set()
         main_body = []
         arg = source_var_name
@@ -94,11 +94,7 @@ class ConvertCodeGenerator:
                 imports.update(imports_step.split("\n"))
             main_body.append(main_body_step)
             arg = return_name
-        return (
-            "\n".join(main_body)
-            if len(imports) == 0
-            else "\n".join(sorted(imports)) + "\n" + "\n".join(main_body)
-        )
+        return ("\n".join(sorted(imports)), "\n".join(main_body))
 
     def _get_conversion_per_step(self, source, target, arg, return_name):
         conversion_on_edge = self.knowledge_graph.get_edge_data(source, target)["conversion"]

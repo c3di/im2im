@@ -162,7 +162,7 @@ factories_cluster_for_pil_tensorflow: FactoriesCluster = (
 
 # https://pytorch.org/vision/master/generated/torchvision.transforms.ToPILImage.html#torchvision.transforms.ToPILImage
 # Converts a torch.*Tensor of shape C x H x W to a PIL Image while adjusting the value range depending on the mode.
-torch_to_pil = ("from torchvision.transforms import functional as F", "return F.to_pil_image(var)")
+torch_to_pil = ("from torchvision.transforms import functional as F", "return F.to_pil_image(var)", True)
 
 factories_for_pil_torch_metadata_pair: list[ConversionForMetadataPair] = [
     # torch tensor, channel first, rgb, float32(0to1) -> PIL image, chanel last, uint8, rgb
@@ -217,7 +217,7 @@ for color_channel in ["rgb", "gray"]:
             {
                 "data_representation": "PIL.Image",
                 "color_channel": color_channel,
-                "channel_order": 'channel last',
+                "channel_order": 'channel last' if color_channel=="rgb" else 'none',
                 "minibatch_input": False,
                 "image_data_type": 'uint8',
                 "device": 'cpu',

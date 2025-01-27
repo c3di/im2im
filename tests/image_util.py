@@ -13,40 +13,55 @@ def random_test_image_and_expected(source_metadata, target_metadata, size=(256, 
         g = np.random.randint(0, 256, size=(h, w), dtype=np.uint8)
         b = np.random.randint(0, 256, size=(h, w), dtype=np.uint8)
         return r, g, b
-
-    if source_metadata["data_representation"] == target_metadata["data_representation"]:
-        return get_test_images(get_r_g_b(*size), source_metadata, target_metadata)
-    else:
-        src_img = get_test_images(get_r_g_b(*size), source_metadata)[0]
-        return src_img, convert_to_another_repr(source_metadata, src_img, target_metadata)
+    src_img = get_test_images(get_r_g_b(*size), source_metadata)[0]
+    return src_img, get_test_images(get_r_g_b(*size), target_metadata)[0]
+    # if source_metadata["data_representation"] == target_metadata["data_representation"]:
+    #     return get_test_images(get_r_g_b(*size), source_metadata, target_metadata)
+    # else:
+    #     src_img = get_test_images(get_r_g_b(*size), source_metadata)[0]
+    #     return src_img, get_test_images(get_r_g_b(*size), target_metadata)[0]
+        # return src_img, convert_to_another_repr(source_metadata, src_img, target_metadata)
 
 
 def convert_to_another_repr(source_metadata, src_img, target_metadata):
+
+    def torch_to_pil(x, x_metadata):
+        if x_metadata.get('minibatch_input', False):
+            x = x.squeeze(0)
+        
+        if x_metadata.get('channel_order') == 'channel last':
+            x = x.permute(2, 0, 1)
+        
+        pil_image = V1F.to_pil_image(x)
+        
+        return pil_image
+
     mapping = {
         "numpy.ndarray":
             {
-                "torch.tensor": lambda x: torch.from_numpy(x),
-                "tf.tensor": lambda x: tf.convert_to_tensor(x),
-                "PIL.Image": lambda x: Image.fromarray(x),
+                "torch.tensor": lambda x, metadata: torch.from_numpy(x),
+                "tf.tensor": lambda x, metadata: tf.convert_to_tensor(x),
+                "PIL.Image": lambda x, metadata: Image.fromarray(x),
             },
         "PIL.Image":
             {
-                "numpy.ndarray": lambda x: np.array(x),
-                "torch.tensor": lambda x: V1F.to_tensor(x),
-                "tf.tensor": lambda x: tf.convert_to_tensor(x),  # to check?
+                "numpy.ndarray": lambda x, metadata: np.array(x),
+                "torch.tensor": lambda x, metadata: V1F.to_tensor(x),
+                "tf.tensor": lambda x, metadata: tf.convert_to_tensor(x),  # to check?
             },
         "torch.tensor":
             {
-                "numpy.ndarray": lambda x: x.numpy(),
-                "PIL.Image": lambda x: V1F.to_pil_image(x),
+                "numpy.ndarray": lambda x, metadata: x.numpy(),
+                "PIL.Image": lambda x, metadata: torch_to_pil(x, metadata),
             },
         "tf.tensor":
             {
-                "numpy.ndarray": lambda x: x.numpy(),
-                "PIL.Image": lambda x: V1F.to_pil_image(x),
+                "numpy.ndarray": lambda x, metadata: x.numpy(),
+                "PIL.Image": lambda x, metadata: V1F.to_pil_image(x),
             }
     }
-    return mapping[source_metadata["data_representation"]][target_metadata["data_representation"]](src_img)
+
+    return mapping[source_metadata["data_representation"]][target_metadata["data_representation"]](src_img, source_metadata)
 
 
 def get_test_images(r_g_b, source_metadata, target_metadata_same_data_repr_as_source=None):

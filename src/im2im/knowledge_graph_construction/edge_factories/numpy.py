@@ -55,9 +55,9 @@ def channel_first_between_bgr_rgb(source_metadata, target_metadata) -> Conversio
             (source_metadata["color_channel"] == "rgb" and target_metadata["color_channel"] == "bgr")):
         if source_metadata["minibatch_input"]:
             # [N, C, H, W]
-            return "import numpy as np", "return var[:, ::-1, :, :]"
+            return "import numpy as np", "return var[:, [2, 1, 0], :, :]"
         # [C, H, W]
-        return "import numpy as np", "return var[::-1, :, :]"
+        return "import numpy as np", "return var[[2, 1, 0], :, :]"
 
 
 def channel_first_rgb_to_gray(source_metadata, target_metadata) -> Conversion:
@@ -73,14 +73,14 @@ def channel_first_rgb_to_gray(source_metadata, target_metadata) -> Conversion:
                 "import numpy as np",
                 """type_in = var.dtype
 weights = np.array([0.299, 0.587, 0.114]).reshape((1, 3, 1, 1))
-var = np.sum(var * weights, axis=1, keepdims=True)
-return var.astype(type_in)""", True)
+im = np.sum(var * weights, axis=1, keepdims=True)
+return im.astype(type_in)""", True)
         # [3, H, W] -> [1, H, W]
         return (
             "import numpy as np",
             """type_in = var.dtype
-var = np.sum(var * np.array([0.299, 0.587, 0.114]).reshape(3, 1, 1), axis=0, keepdims=True)
-return var.astype(type_in)""", True)
+im = np.sum(var * np.array([0.299, 0.587, 0.114]).reshape(3, 1, 1), axis=0, keepdims=True)
+return im.astype(type_in)""", True)
 
 
 def channel_first_bgr_to_gray(source_metadata, target_metadata) -> Conversion:
@@ -96,14 +96,14 @@ def channel_first_bgr_to_gray(source_metadata, target_metadata) -> Conversion:
                 "import numpy as np",
                 """type_in = var.dtype
 weights = np.array([0.114, 0.587, 0.299]).reshape((1, 3, 1, 1))
-var = np.sum(var * weights, axis=1, keepdims=True)
-return var.astype(type_in)""", True)
+im = np.sum(var * weights, axis=1, keepdims=True)
+return im.astype(type_in)""", True)
         # [3, H, W] -> [1, H, W]
         return (
             "import numpy as np",
             """type_in = var.dtype
-var = np.sum(var * np.array([0.114, 0.587, 0.299]).reshape(3, 1, 1), axis=0)
-return var.astype(type_in)""", True)
+im = np.sum(var * np.array([0.114, 0.587, 0.299]).reshape(3, 1, 1), axis=0, keepdims=True)
+return im.astype(type_in)""", True)
 
 
 def channel_first_gray_to_rgb_or_bgr(source_metadata, target_metadata) -> Conversion:
@@ -135,10 +135,10 @@ def channel_last_between_bgr_rgb(source_metadata, target_metadata) -> Conversion
             # [N, H, W, C]
             return (
                 "import numpy as np",
-                "return var[:, :, :, ::-1]",
+                "return var[:, :, :, [2, 1, 0]]",
             )
         # [H, W, C]
-        return "import numpy as np", "return var[:, :, ::-1]"
+        return "import numpy as np", "return var[:, :, [2, 1, 0]]"
 
 
 def channel_last_rgb_to_gray(source_metadata, target_metadata) -> Conversion:
@@ -150,14 +150,14 @@ def channel_last_rgb_to_gray(source_metadata, target_metadata) -> Conversion:
             return (
                 "import numpy as np",
                 """type_in = var.dtype
-var = np.expand_dims(np.dot(var[..., :3], [0.299, 0.587, 0.114]), axis=-1)
-return var.astype(type_in)""", True)
+im = np.expand_dims(np.dot(var[..., :3], [0.299, 0.587, 0.114]), axis=-1)
+return im.astype(type_in)""", True)
         # [H, W, 3] -> [H, W, 1]
         return (
             "import numpy as np",
             """type_in = var.dtype
-var = np.expand_dims(np.dot(var, [0.299, 0.587, 0.114]), axis=-1)
-return var.astype(type_in)""", True)
+im = np.expand_dims(np.dot(var, [0.299, 0.587, 0.114]), axis=-1)
+return im.astype(type_in)""", True)
 
 
 def channel_last_bgr_to_gray(source_metadata, target_metadata) -> Conversion:
@@ -168,8 +168,8 @@ def channel_last_bgr_to_gray(source_metadata, target_metadata) -> Conversion:
         return (
             "import numpy as np",
             """type_in = var.dtype
-var = np.expand_dims(np.dot(var[..., :3], [0.114, 0.587, 0.299]), axis=-1)
-return var.astype(type_in)""", True)
+im = np.expand_dims(np.dot(var[..., :3], [0.114, 0.587, 0.299]), axis=-1)
+return im.astype(type_in)""", True)
 
 
 def channel_last_gray_to_rgb_or_gbr(source_metadata, target_metadata) -> Conversion:
@@ -279,7 +279,7 @@ def image_data_to_uint16_full_range(source_metadata, target_metadata) -> Convers
                                                        "float32(0to1)", "float64(0to1)", "double(0to1)"]
             and target_metadata.get("image_data_type") == "uint16"
     ):
-        is_lossy = source_metadata.get("image_data_type") in ["uint32", "int8", "int16", "int32"]
+        is_lossy = source_metadata.get("image_data_type") != "uint8"
         return "import skimage as ski", "return ski.util.img_as_uint(var)", is_lossy
 
 

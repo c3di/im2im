@@ -37,21 +37,21 @@ class Image:
             self.metadata = config
 
 
-def im2im(source_image: Image, target_preset_path, allow_lossy_fallback=True) -> Image:
-    target_metadata = find_target_metadata(source_image.metadata, target_preset_path)
+def im2im(source_image: Image, target: str| Metadata, allow_lossy_fallback=True) -> Image:
+    target_metadata = find_target_metadata(source_image.metadata, target) if isinstance(target, str) else target
+    
     if source_image.metadata == target_metadata:
         return source_image
 
     raw_image = source_image.raw_image
     target_image_name = "target_image"
-    code_str = im2im_code("raw_image", source_image.metadata, target_image_name, target_metadata,
-                          allow_lossy_fallback)
-    exec(code_str)
+    code = im2im_code("raw_image", source_image.metadata, target_image_name, target_metadata, allow_lossy_fallback)
+    exec('\n'.join(code))
     return Image(locals()[target_image_name], target_metadata)
 
 
 def im2im_code(source_var_name: str, source_metadata: Metadata, target_var_name: str, target_metadata: Metadata,
-               allow_lossy_fallback=True) -> Union[str, None]:
+               allow_lossy_fallback=True) -> Union[tuple[str, str], None]:
     """
     Generates Python code as a string that performs data conversion from a source variable to a target variable based on specified preset path.
 
