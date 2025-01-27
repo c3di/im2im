@@ -71,8 +71,8 @@ We developed two VPLs: one base VPL that directly integrates functions from mult
 **Accuracy**
 All conversion code snippets are thoroughly verified through [execution checks](https://github.com/c3di/im2im/blob/main/tests/test_conversion_code_in_kg.py) to ensure their correctness.
 
-**Performance Profiling**
-Performance is analyzed using the cProfile module, with detailed results available in the [profiling notebooks](https://github.com/c3di/im2im/blob/main/profile).
+**Performance Benchmark**
+Please refer to [benchmark](https://github.com/c3di/im2im/blob/main/benchmark) folder.
 
 ## Contribution
 
