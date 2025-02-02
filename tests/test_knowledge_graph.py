@@ -5,7 +5,7 @@ import networkx as nx
 import pytest
 
 from src.im2im.knowledge_graph_construction import KnowledgeGraph
-from src.im2im.code_generator import cost_on_edge
+from src.im2im.code_generator import huristic_function
 from .data_for_tests.nodes_edges import test_nodes, test_edges, new_node, new_edge
 
 
@@ -52,20 +52,21 @@ def test_save_to_file(kg):
 
 def test_get_shortest_path(kg):
     kg.add_node(new_node)
+    kg.save_to_file('kg_5nodes_4edges.json')
     kg.add_edge(new_edge[0], new_edge[1], new_edge[2])
 
-    path = kg.get_shortest_path(test_nodes[0], new_node, cost_on_edge)
-    expected_path = [test_nodes[0], test_nodes[1], test_nodes[2], test_nodes[3], new_node]
+    path = kg.get_shortest_path(test_nodes[0], new_node, huristic_function)
+    expected_path = [test_nodes[0], test_nodes[2], test_nodes[3], new_node]
     assert path == expected_path, f"Expected {expected_path}, got {path}"
 
 
 def test_get_shortest_path_no_path(kg):
-    path = kg.get_shortest_path(test_nodes[2], test_nodes[0], cost_on_edge)
+    path = kg.get_shortest_path(test_nodes[2], test_nodes[0], huristic_function)
     assert path is None, f"Expected None, got {path}"
 
 
 def test_get_shortest_path_same_node(kg):
-    path = kg.get_shortest_path(test_nodes[0], test_nodes[0], cost_on_edge)
+    path = kg.get_shortest_path(test_nodes[0], test_nodes[0], huristic_function)
     assert path == [test_nodes[0]], f"Expected {test_nodes[0]}, got {path}"
 
 

@@ -60,13 +60,6 @@ def im2im_code(source_var_name: str, source_metadata: Metadata, target_var_name:
                                           allow_lossy_fallback)
 
 
-def gpu_penalty(gpu_penalty: float):
-    """
-    We use A* to find the shortest path in the knowledge graph. The goal function is only step cost by default.
-    You can use this function to set `cpu penalty`, `gpu penalty` to the goal function.
-    """
-    _code_generator.gpu_penalty(gpu_penalty)
-
 
 def new_cost_function_on_edge(cost_function: callable):
     """
@@ -75,6 +68,9 @@ def new_cost_function_on_edge(cost_function: callable):
     By default, it returns (information loss, step cost + gpu penalty).
     """
     _code_generator.cost_on_edge = cost_function
+
+def new_huristic_function(function):
+    _code_generator.huristic_function = function
 
 
 def get_possible_metadata(preset: str) -> PossibleMetadata:

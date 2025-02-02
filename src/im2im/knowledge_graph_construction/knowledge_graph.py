@@ -61,8 +61,9 @@ class KnowledgeGraph:
         self._graph = load_graph(path)
 
     def get_shortest_path(
-        self, source_metadata, target_metadata, cost_function, accept_lossy_path=True
+        self, source_metadata, target_metadata, huristic_function, accept_lossy_path=True
     ) -> Union[List[str], None]:
+        target_metadata_str = encode_metadata(target_metadata)
         # Priority queue: stores (cost, node, path)
         pq = []
         heappush(pq, ((0, 0), encode_metadata(source_metadata), []))
@@ -72,7 +73,7 @@ class KnowledgeGraph:
         while pq:
             current_cost, current_node, path = heappop(pq)
 
-            if current_node == encode_metadata(target_metadata):
+            if current_node == target_metadata_str:
                 return [decode_metadata(node) for node in path] + [target_metadata]
 
             if current_node in visited:
@@ -85,12 +86,17 @@ class KnowledgeGraph:
                 if 'conversion' not in edge_data:
                     continue
 
-                new_cost = tuple(x + y for x, y in zip(current_cost, cost_function(current_node, neighbor, edge_data["conversion"])))
-                if not accept_lossy_path and new_cost[0] > 0:
+                goal_cost = tuple(x + y for x, y in zip(current_cost, edge_data["conversion"][2]))
+                if huristic_function is None:
+                    total_cost = goal_cost
+                else:
+                    huristic = huristic_function(neighbor, target_metadata_str)
+                    total_cost = tuple(x + y for x, y in zip(goal_cost, huristic))
+                if not accept_lossy_path and total_cost[0] > 0:
                     continue
 
                 # storing the cost (tuples) are compared lexicographically.
-                heappush(pq, (new_cost, neighbor, path + [current_node]))
+                heappush(pq, (total_cost, neighbor, path + [current_node]))
 
         return None
 

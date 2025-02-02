@@ -12,7 +12,7 @@ from .data_for_tests.nodes_edges import new_node, test_nodes, all_nodes
 def code_generator():
     kg = KnowledgeGraph()
     kg.load_from_file(
-        os.path.join(os.path.dirname(__file__), "data_for_tests/kg_5nodes_4edges.json")
+        os.path.join(os.path.dirname(__file__), "data_for_tests/kg_5nodes_5edges.json")
     )
     return ConvertCodeGenerator(kg)
 
@@ -42,7 +42,7 @@ def test_conversion_path(code_generator):
     code_generator.knowledge_graph.get_shortest_path.assert_called_once_with(
         {"source": "source_metadata"},
         {"target": "target_metadata"},
-        code_generator.cost_on_edge,
+        code_generator.huristic_function,
         True,
     )
     assert (
@@ -82,7 +82,7 @@ def test_generate_conversion_multiple_steps(code_generator):
     )
 
     expected_code = (
-        "import torch\n"
+        'import torch',
         "image = torch.from_numpy(source_var)\n"
         "image = image.permute(2, 0, 1)\n"
         "result = torch.unsqueeze(image, 0)"
@@ -106,7 +106,7 @@ def test_generate_conversion_using_cache(code_generator):
         source_var, test_nodes[0], target_var, new_node
     )
     expected_code = (
-        "import torch\n"
+        'import torch',
         "image = torch.from_numpy(source_var)\n"
         "image = image.permute(2, 0, 1)\n"
         "result = torch.unsqueeze(image, 0)"

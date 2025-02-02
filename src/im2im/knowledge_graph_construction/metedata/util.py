@@ -54,3 +54,11 @@ def is_metadata_complete(instance: dict) -> bool:
     required_keys = set(Metadata.__annotations__.keys())
     instance_keys = set(instance.keys())
     return required_keys.issubset(instance_keys)
+
+
+def count_differences(metadata_str1: str, metadata_str2: str) -> int:
+    return sum(map(lambda x: x[0] != x[1], zip(metadata_str1.split('_'), metadata_str2.split('_'))))
+   
+
+def count_same(dict1: Metadata, dict2: Metadata) -> int:
+    return sum(1 for key in dict1 if dict1[key] == dict2.get(key))

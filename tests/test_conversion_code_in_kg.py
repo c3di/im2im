@@ -1,5 +1,3 @@
-import re
-
 import pytest
 import tensorflow as tf
 import torch
@@ -29,14 +27,6 @@ def assert_exec_of_conversion_code_in_edge(source_metadata, target_metadata, kg)
     assert isinstance(conversion[1], str), (
         f"Expected the second element of the conversion to be a string, but got:"
         f" {conversion[1]} from {source_metadata} to {target_metadata}")
-    if len(conversion) > 2:
-        assert isinstance(conversion[2], bool), (
-            f"Expected the third element of the conversion to be a boolean, but got:"
-            f" {conversion[2]} from {source_metadata} to {target_metadata}")
-    if len(conversion) > 3:
-        assert isinstance(conversion[3], bool), (
-            f"Expected the fourth element of the conversion to be a boolean, but got:"
-            f" {conversion[3]} from {source_metadata} to {target_metadata}")
 
     assert isinstance(conversion[0], str), (f"Expected the first element of the conversion to be a string, but got:"
                                             f" {conversion[0]} from {source_metadata} to {target_metadata}")

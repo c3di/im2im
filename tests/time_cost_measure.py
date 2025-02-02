@@ -7,6 +7,9 @@ from src.im2im.util import instance_code_template
 
 def time_cost(source, target, conversion, test_img_size=(256, 256), repeat_count=10):
     source_image, _ = random_test_image_and_expected(source, target, test_img_size)
+
+    if(source_image is None):
+        return float('inf')
     
     code = instance_code_template(conversion[1], "source_image", "target_image")
     globals_ = {

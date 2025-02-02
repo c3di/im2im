@@ -3,7 +3,7 @@ import os.path
 from typing import List, Union
 
 from .knowledge_graph import KnowledgeGraph
-from .metedata import MetadataValues
+from .metedata import MetadataValues, count_same
 from .edge_factories import FactoriesCluster, ConversionForMetadataPair
 from ..util import exclude_key_from_list
 
@@ -105,10 +105,15 @@ class KnowledgeGraphConstructor:
             if isinstance(factory, str)
             else f"{factory.__code__.co_name} in {factory.__code__.co_filename}"
         )
+        is_lossy = conversion[2] if len(conversion) > 2 else False
+        is_on_gpu = conversion[3] if len(conversion) > 3 else False
+        gpu_penalty = 0.5 # todo: add API to config
+        constraint_cost = count_same(source, target) + gpu_penalty * float(is_on_gpu)
+        edge_property = (conversion[0], conversion[1], (float(is_lossy), constraint_cost))
         self.knowledge_graph.add_edge(
             source,
             target,
-            conversion=conversion,
+            conversion=edge_property,
             factory=used_factory,
         )
 

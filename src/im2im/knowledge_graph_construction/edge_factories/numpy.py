@@ -289,8 +289,9 @@ def image_data_to_int16_full_range(source_metadata, target_metadata) -> Conversi
                                                        "float32(-1to1)", "float64(-1to1)", "double(-1to1)",
                                                        "float32(0to1)", "float64(0to1)", "double(0to1)"]
             and target_metadata.get("image_data_type") == "int16"
-    ):
-        is_lossy = source_metadata.get("image_data_type") in ["uint16", "uint32", "int32"]
+    ):  
+        # Potential loss due to rounding error from float to int6 or overflow from int32
+        is_lossy = source_metadata.get("image_data_type") not in ["int8", "uint8"]
         return "import skimage as ski", "return ski.util.img_as_int(var)", is_lossy
 
 

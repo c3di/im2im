@@ -1,14 +1,11 @@
 from typing import Union
 
-from .knowledge_graph_construction import encode_metadata, Metadata, Conversion
+from .knowledge_graph_construction import encode_metadata, Metadata, count_differences
 from .util import instance_code_template
 
 
-def cost_on_edge(u, v, conversion: Conversion, gpu_penalty: float = 0.5) -> (float, float):
-    is_lossy = conversion[2] if len(conversion) > 2 else False
-    is_on_gpu = conversion[3] if len(conversion) > 3 else False
-    step_cost = 1
-    return float(is_lossy), step_cost + gpu_penalty * float(is_on_gpu)
+def huristic_function(u: str, v:str)-> (float, float):
+    return (0, count_differences(u, v))
 
 
 class ConvertCodeGenerator:
@@ -16,15 +13,9 @@ class ConvertCodeGenerator:
     def __init__(self, knowledge_graph):
         self._knowledge_graph = knowledge_graph
         self._cache = {}
-        self._gpu_penalty = 0.5
-        self._normalize_time_cost = lambda u, v: 0
 
-    @property
-    def gpu_penalty(self, gpu_penalty: float):
-        self._gpu_penalty = gpu_penalty
-
-    def cost_on_edge(self, u, v, conversion: Conversion) -> (float, float):
-        return cost_on_edge(u, v, conversion, self._gpu_penalty)
+    def huristic_function(self, u, v):
+        return huristic_function(u, v)
 
     @property
     def knowledge_graph(self):
@@ -35,7 +26,7 @@ class ConvertCodeGenerator:
         self._knowledge_graph = value
 
     def get_convert_path(self, source_metadata: Metadata, target_metadata: Metadata, allow_lossy_fallback=True):
-        return self.knowledge_graph.get_shortest_path(source_metadata, target_metadata, self.cost_on_edge,
+        return self.knowledge_graph.get_shortest_path(source_metadata, target_metadata, self.huristic_function,
                                                       allow_lossy_fallback)
 
     def get_conversion(
@@ -66,8 +57,7 @@ class ConvertCodeGenerator:
         if (source_encode_str, target_encode_str) in self._cache:
             cvt_path = self._cache[(source_encode_str, target_encode_str, allow_lossy_fallback)]
         else:
-            cvt_path = self.knowledge_graph.get_shortest_path(source_metadata, target_metadata,
-                                                              self.cost_on_edge, allow_lossy_fallback)
+            cvt_path = self.knowledge_graph.get_shortest_path(source_metadata, target_metadata, self.huristic_function, allow_lossy_fallback)
             self._cache[(source_encode_str, target_encode_str, allow_lossy_fallback)] = cvt_path
         if cvt_path is None:
             result = None

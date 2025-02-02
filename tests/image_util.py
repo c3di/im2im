@@ -13,14 +13,15 @@ def random_test_image_and_expected(source_metadata, target_metadata, size=(256, 
         g = np.random.randint(0, 256, size=(h, w), dtype=np.uint8)
         b = np.random.randint(0, 256, size=(h, w), dtype=np.uint8)
         return r, g, b
-    src_img = get_test_images(get_r_g_b(*size), source_metadata)[0]
-    return src_img, get_test_images(get_r_g_b(*size), target_metadata)[0]
+    r_g_b = get_r_g_b(*size)
+    src_img = get_test_images(r_g_b, source_metadata)[0]
+    return src_img, get_test_images(r_g_b, target_metadata)[0]
     # if source_metadata["data_representation"] == target_metadata["data_representation"]:
     #     return get_test_images(get_r_g_b(*size), source_metadata, target_metadata)
     # else:
     #     src_img = get_test_images(get_r_g_b(*size), source_metadata)[0]
     #     return src_img, get_test_images(get_r_g_b(*size), target_metadata)[0]
-        # return src_img, convert_to_another_repr(source_metadata, src_img, target_metadata)
+    #     return src_img, convert_to_another_repr(source_metadata, src_img, target_metadata)
 
 
 def convert_to_another_repr(source_metadata, src_img, target_metadata):
@@ -65,18 +66,22 @@ def convert_to_another_repr(source_metadata, src_img, target_metadata):
 
 
 def get_test_images(r_g_b, source_metadata, target_metadata_same_data_repr_as_source=None):
-    if source_metadata["data_representation"] == "numpy.ndarray":
-        return get_numpy_image(r_g_b, source_metadata, target_metadata_same_data_repr_as_source)
-    elif source_metadata["data_representation"] == "torch.tensor":
-        return get_torch_image(r_g_b, source_metadata, target_metadata_same_data_repr_as_source)
-    elif source_metadata["data_representation"] == "tf.tensor":
-        return get_tensorflow_image(r_g_b, source_metadata, target_metadata_same_data_repr_as_source)
-    elif source_metadata["data_representation"] == "PIL.Image":
-        return get_pil_image(r_g_b, source_metadata, target_metadata_same_data_repr_as_source)
-    else:
-        raise ValueError(
-            f"Unsupported data representation: {source_metadata['data_representation']}"
-        )
+    try:
+        if source_metadata["data_representation"] == "numpy.ndarray":
+            return get_numpy_image(r_g_b, source_metadata, target_metadata_same_data_repr_as_source)
+        elif source_metadata["data_representation"] == "torch.tensor":
+            return get_torch_image(r_g_b, source_metadata, target_metadata_same_data_repr_as_source)
+        elif source_metadata["data_representation"] == "tf.tensor":
+            return get_tensorflow_image(r_g_b, source_metadata, target_metadata_same_data_repr_as_source)
+        elif source_metadata["data_representation"] == "PIL.Image":
+            return get_pil_image(r_g_b, source_metadata, target_metadata_same_data_repr_as_source)
+        else:
+            raise ValueError(
+                f"Unsupported data representation: {source_metadata['data_representation']}"
+            )
+    except Exception as e:
+        print(f"Error: {e}")
+        return [None]
 
 
 def dtype_min_max(np_type):

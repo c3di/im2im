@@ -24,14 +24,13 @@ def test_get_conversion_code():
     # source = get_possible_metadata("numpy.float64(0to1)")
     source = {"data_representation": "numpy.ndarray", "minibatch_input": False, "device": "cpu",
      "image_data_type": "float32(0to1)", "color_channel": "rgb", "channel_order": "channel last"}
-    target = find_target_metadata(source, "torch.rgb")
+    target = find_target_metadata(source, "torch.gpu")
 
     actual_code = im2im_code("source_image", source, "target_image", target)
-    expected_code = ('from PIL import Image\n'
-                     'from torchvision.transforms import functional as F\n'
-                     'image = Image.fromarray(source_image)\n'
-                     'image = F.to_tensor(image)\n'
-                     'image = image.unsqueeze(0)\n'
+    expected_code = ('import numpy as np\nimport torch',
+                     'image = source_image.transpose(2, 0, 1)\n'
+                     'image = image[np.newaxis, ...]\n'
+                     'image = torch.from_numpy(image)\n'
                      'target_image = image.cuda()')
 
     assert actual_code == expected_code
