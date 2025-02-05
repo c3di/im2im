@@ -1,5 +1,7 @@
 # im2im: Automatically Converting In-Memory Image Representations using A Knowledge Graph Approach
 
+**NOTE**: The new heuristic and cost function in the A* algorithm have already been updated, and the package will be built and published.
+
 **NOTE**: In the anonymous version, when clicking on links (such as those in the README), you may experience longer loading times on the anonymized GitHub site. We recommend navigating to the file manually and then clicking to open it directly
 
 **NOTE**: For the purposes of double-blind review, we have kept the repository private and temporarily removed the package from PyPI. We apologize for any inconvenience and will republish the package once the review process is complete.
