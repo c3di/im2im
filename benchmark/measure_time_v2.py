@@ -52,7 +52,6 @@ def use_im2im(source_image, source, target, repeat_count=5):
 
 
 def measure_time(pair, res, repeat_count=1):
-    print(f'measure {pair}')
     source, target = pair
     if not isinstance(res, tuple):
         res = (res, res)
@@ -67,7 +66,11 @@ def measure_time(pair, res, repeat_count=1):
 def measure_times(pairs, res, repeat_count):    
     cost_time = []
     exception = []
+    counter = 1
+    total = len(pairs)
     for pair in pairs:
+        print(f'{counter}/{total} measure {pair}')
+        counter = counter + 1
         t = measure_time(pair, res, repeat_count)
         if t is None:
             continue
