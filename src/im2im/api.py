@@ -69,7 +69,7 @@ def new_cost_function_on_edge(cost_function: callable):
     """
     _code_generator.cost_on_edge = cost_function
 
-def new_huristic_function(function):
+def new_heuristic_function(function):
     _code_generator.huristic_function = function
 
 

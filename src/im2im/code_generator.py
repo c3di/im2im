@@ -1,12 +1,11 @@
 from typing import Union
 
-from .knowledge_graph_construction import encode_metadata, Metadata, count_differences
+from .knowledge_graph_construction import Metadata, encode_metadata
 from .util import instance_code_template
+from .impl_c import attribute_diff_count
 
-
-def huristic_function(u: str, v:str)-> (float, float):
-    return (0, count_differences(u, v))
-
+def huristic_function(u, v):
+    return (0, attribute_diff_count(u, v))
 
 class ConvertCodeGenerator:
 
@@ -15,7 +14,7 @@ class ConvertCodeGenerator:
         self._cache = {}
 
     def huristic_function(self, u, v):
-        return huristic_function(u, v)
+        return (0, attribute_diff_count(u, v))
 
     @property
     def knowledge_graph(self):
