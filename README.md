@@ -68,13 +68,13 @@ For integration to visual programming language, please refer to Use Cases in VPL
 ## Evaluation
 
 **Use Cases in VPLs**
-We developed two VPLs: one base VPL that directly integrates functions from multiple sources and the same VPL enhanced by our im2im library. The source code are available in [Comparative Analysis](https://github.com/c3di/im2im/blob/anonymized_for_review/comparative_analysis). For detailed comparisons, please refer to the following studies: [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1E0Sgrb2CrUkoXVv9bcUWvnbLNJ5i-DF4?usp=sharing), [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1ILMiCqwrJ-zRHzDp0e3IL7fOcvamrGYS?usp=sharing) and [third study](https://github.com/c3di/im2im/blob/anonymized_for_review/comparative_analysis/3/Implementation_Comparison.pdf).
+We developed two VPLs: one base VPL that directly integrates functions from multiple sources and the same VPL enhanced by our im2im library. The source code are available in Comparative Analysis folder. For detailed comparisons, please refer to the following studies: [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1E0Sgrb2CrUkoXVv9bcUWvnbLNJ5i-DF4?usp=sharing), [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1ILMiCqwrJ-zRHzDp0e3IL7fOcvamrGYS?usp=sharing) and [third study](https://github.com/c3di/im2im/blob/anonymized_for_review/comparative_analysis/3/Implementation_Comparison.pdf).
 
 **Accuracy**
 All conversion code snippets are thoroughly verified through [execution checks](https://github.com/c3di/im2im/blob/main/tests/test_conversion_code_in_kg.py) to ensure their correctness.
 
 **Performance Benchmark**
-Please refer to [benchmark](https://github.com/c3di/im2im/tree/anonymized_for_review/benchmark) folder.
+Please refer to benchmark folder.
 
 ## Contribution
 
