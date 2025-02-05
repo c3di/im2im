@@ -16,7 +16,7 @@
 
 The `im2im` package provides an automated approach for converting in-memory image representations across a variety of image processing libraries, including `scikit-image`, `opencv-python`, `scipy`, `PIL`, `Matplotlib.plt.imshow`, `PyTorch`, `Kornia` and `Tensorflow`. It handles the nuances inherent to each library's image representation, such as data formats (numpy arrays, PIL images, torch tensors, and so on), color channel (RGB or grayscale), channel order (channel first or last or none), device (CPU/GPU), and pixel intensity ranges.
 
-**We aim to identify the conversion code that minimizes information loss and requires the fewest conversion steps, prioritizing CPU execution while applying a configurable penalty for GPU operations. Both the search function and GPU penalty can be adjusted to suit different scenarios.**
+**We aim to identify the conversion code that minimizes information loss and requires the fewest conversion steps.**
 
 Im2im was developed for the use in Visual Programming Language (VPLs) for image processing to completely removes the conversions steps required to manually manage image transformations, drastically improving accessibility, specifically for non-expert users. It also addresses the tension between low-level implementation details necessary for compatibility and the high-level image processing operations that VPLs aim to provide. However, the library is a conventional Python package, and as such, it can also be used by directly invoking its functions from any Python image processing program to automate image conversion steps. Considering the relatively low memory footprint and computational overhead of the system, using the library to simplify conventional Python programming is an interesting option as well. 
 
@@ -58,23 +58,23 @@ converted: Image = im2im(Image(to_be_converted, "numpy.rgb_uint8"), "torch.gpu")
 # image = image.unsqueeze(0)
 # target_image = image.cuda()'
 
-# We aim to identify the conversion code that minimizes information loss and requires the fewest conversion steps, prioritizing CPU execution while applying a configurable penalty for GPU operations. Both the search function and GPU penalty can be adjusted to suit different scenarios.**
+# We aim to identify the conversion code that minimizes information loss and requires the fewest conversion steps.**
 ```
 
-For other APIs like `im2im_code`, please refer to [public APIs](https://github.com/c3di/im2im/blob/main/src/im2im/api.py). 
+For other APIs like `im2im_code`, please refer to [public APIs](https://github.com/c3di/im2im/blob/anonymized_for_review/src/im2im/api.py). 
 
-For integration to visual programming language, please refer to [Comparative Analysis](https://github.com/c3di/im2im/blob/main/comparative_analysis).
+For integration to visual programming language, please refer to Use Cases in VPLs below.
 
 ## Evaluation
 
-**Comparative Analysis**
-We developed two VPLs: one base VPL that directly integrates functions from multiple sources and the same VPL enhanced by our im2im library. The source code are available in [Comparative Analysis](https://github.com/c3di/im2im/blob/main/comparative_analysis). For detailed comparisons, please refer to the following studies: [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1E0Sgrb2CrUkoXVv9bcUWvnbLNJ5i-DF4?usp=sharing), [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1ILMiCqwrJ-zRHzDp0e3IL7fOcvamrGYS?usp=sharing) and [third study](https://github.com/c3di/im2im/blob/main/comparative_analysis/3/Implementation_Comparison.pdf).
+**Use Cases in VPLs**
+We developed two VPLs: one base VPL that directly integrates functions from multiple sources and the same VPL enhanced by our im2im library. The source code are available in [Comparative Analysis](https://github.com/c3di/im2im/blob/anonymized_for_review/comparative_analysis). For detailed comparisons, please refer to the following studies: [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1E0Sgrb2CrUkoXVv9bcUWvnbLNJ5i-DF4?usp=sharing), [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1ILMiCqwrJ-zRHzDp0e3IL7fOcvamrGYS?usp=sharing) and [third study](https://github.com/c3di/im2im/blob/anonymized_for_review/comparative_analysis/3/Implementation_Comparison.pdf).
 
 **Accuracy**
 All conversion code snippets are thoroughly verified through [execution checks](https://github.com/c3di/im2im/blob/main/tests/test_conversion_code_in_kg.py) to ensure their correctness.
 
 **Performance Benchmark**
-Please refer to [benchmark](https://github.com/c3di/im2im/blob/main/benchmark) folder.
+Please refer to [benchmark](https://github.com/c3di/im2im/tree/anonymized_for_review/benchmark) folder.
 
 ## Contribution
 
