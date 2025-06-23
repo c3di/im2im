@@ -37,7 +37,7 @@ class Image:
             self.metadata = config
 
 
-def im2im(source_image: Image, target: str| Metadata, allow_lossy_fallback=True) -> Image:
+def im2im(source_image: Image, target: Union['Metadata', str], allow_lossy_fallback=True) -> Image:
     target_metadata = find_target_metadata(source_image.metadata, target) if isinstance(target, str) else target
     
     if source_image.metadata == target_metadata:
