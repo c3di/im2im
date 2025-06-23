@@ -21,15 +21,18 @@ def test_im2im():
 
 
 def test_get_conversion_code():
-    source = get_possible_metadata("numpy.rgb_uint8")
-    target = find_target_metadata(source, "torch.rgb")
+    # source = get_possible_metadata("numpy.float64(0to1)")
+    source = {"data_representation": "numpy.ndarray", "minibatch_input": False, "device": "cpu",
+     "image_data_type": "float32(0to1)", "color_channel": "rgb", "channel_order": "channel last"}
+    target = find_target_metadata(source, "torch.gpu")
 
     actual_code = im2im_code("source_image", source, "target_image", target)
-    expected_code = ('import torch\n'
+    expected_code = ('import torch',
                      'image = torch.from_numpy(source_image)\n'
                      'image = image.permute(2, 0, 1)\n'
                      'image = image.unsqueeze(0)\n'
-                     'target_image = image / 255.0')
+                     'target_image = image.cuda()')
+
     assert actual_code == expected_code
 
 
@@ -39,12 +42,12 @@ def conversion_for_metadata_pairs():
               "image_data_type": "uint8", "device": "gpu", "data_representation": "torch.tensor"},
              {"color_channel": "rgb", "channel_order": "channel first", "minibatch_input": False,
               "image_data_type": "uint8", "device": "gpu", "data_representation": "torch.tensor"},
-             ("", "def convert(var):\n  return var[[2, 1, 0], :, :]")),
+             ("", "return var[[2, 1, 0], :, :]")),
             ({"color_channel": "bgr", "channel_order": "channel first", "minibatch_input": False,
               "image_data_type": "uint8", "device": "gpu", "data_representation": "torch.tensor"},
              {"color_channel": "rgb", "channel_order": "channel first", "minibatch_input": False,
               "image_data_type": "uint8", "device": "gpu", "data_representation": "torch.tensor"},
-             ("", "def convert(var):\n  return var[[2, 1, 0], :, :]"))
+             ("", "return var[[2, 1, 0], :, :]"))
             ]
 
 

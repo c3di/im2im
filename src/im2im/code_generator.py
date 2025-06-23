@@ -1,20 +1,29 @@
 from typing import Union
-from .util import extract_func_body
-from .knowledge_graph_construction import encode_metadata, Metadata
 
+from .knowledge_graph_construction import Metadata, encode_metadata
+from .util import instance_code_template
+
+def attribute_diff_count(u: str, v: str) -> int:
+    s1 = u.split('.')
+    s2 = v.split('.')
+    counter = 0
+    for a, b in zip(s1, s2):
+        if a != b:
+            counter += 1
+    return counter
+
+
+def huristic_function(u, v):
+    return (0, attribute_diff_count(u, v))
 
 class ConvertCodeGenerator:
 
     def __init__(self, knowledge_graph):
         self._knowledge_graph = knowledge_graph
         self._cache = {}
-        self._cpu_penalty = 0
-        self._gpu_penalty = 0
-        self._normalize_time_cost = lambda u, v: 0
 
-    def config_astar_goal_function(self, cpu_penalty: float, gpu_penalty: float):
-        self._cpu_penalty = cpu_penalty
-        self._gpu_penalty = gpu_penalty
+    def huristic_function(self, u, v):
+        return (0, attribute_diff_count(u, v))
 
     @property
     def knowledge_graph(self):
@@ -24,16 +33,18 @@ class ConvertCodeGenerator:
     def knowledge_graph(self, value):
         self._knowledge_graph = value
 
-    def get_convert_path(self, source_metadata: Metadata, target_metadata: Metadata):
-        return self.knowledge_graph.get_shortest_path(source_metadata, target_metadata, self._goal_function_for_AStar)
+    def get_convert_path(self, source_metadata: Metadata, target_metadata: Metadata, allow_lossy_fallback=True):
+        return self.knowledge_graph.get_shortest_path(source_metadata, target_metadata, self.huristic_function,
+                                                      allow_lossy_fallback)
 
     def get_conversion(
-        self,
-        source_var_name: str,
-        source_metadata: Metadata,
-        target_var_name: str,
-        target_metadata: Metadata,
-    ) -> Union[str, None]:
+            self,
+            source_var_name: str,
+            source_metadata: Metadata,
+            target_var_name: str,
+            target_metadata: Metadata,
+            allow_lossy_fallback=True,
+    ) -> Union[tuple[str, str], None]:
         """
         Generates Python code as a string that performs data conversion from a source variable to a target variable
          based on the provided metadata.
@@ -52,11 +63,10 @@ class ConvertCodeGenerator:
         source_encode_str = encode_metadata(source_metadata)
         target_encode_str = encode_metadata(target_metadata)
         if (source_encode_str, target_encode_str) in self._cache:
-            cvt_path = self._cache[(source_encode_str, target_encode_str)]
+            cvt_path = self._cache[(source_encode_str, target_encode_str, allow_lossy_fallback)]
         else:
-            cvt_path = self.knowledge_graph.get_shortest_path(source_metadata, target_metadata,
-                                                              self._goal_function_for_AStar)
-            self._cache[(source_encode_str, target_encode_str)] = cvt_path
+            cvt_path = self.knowledge_graph.get_shortest_path(source_metadata, target_metadata, self.huristic_function, allow_lossy_fallback)
+            self._cache[(source_encode_str, target_encode_str, allow_lossy_fallback)] = cvt_path
         if cvt_path is None:
             result = None
         elif len(cvt_path) == 1:
@@ -68,8 +78,8 @@ class ConvertCodeGenerator:
         return result
 
     def _get_conversion_multiple_steps(
-        self, cvt_path_in_kg, source_var_name, target_var_name
-    ) -> str:
+            self, cvt_path_in_kg, source_var_name, target_var_name
+    )->tuple[str, str]:
         imports = set()
         main_body = []
         arg = source_var_name
@@ -82,22 +92,10 @@ class ConvertCodeGenerator:
                 imports.update(imports_step.split("\n"))
             main_body.append(main_body_step)
             arg = return_name
-        return (
-            "\n".join(main_body)
-            if len(imports) == 0
-            else "\n".join(imports) + "\n" + "\n".join(main_body)
-        )
+        return ("\n".join(sorted(imports)), "\n".join(main_body))
 
     def _get_conversion_per_step(self, source, target, arg, return_name):
         conversion_on_edge = self.knowledge_graph.get_edge_data(source, target)["conversion"]
         imports = conversion_on_edge[0]
-        main_body = extract_func_body(conversion_on_edge[1], arg, return_name)
+        main_body = instance_code_template(conversion_on_edge[1], arg, return_name)
         return imports, main_body
-
-    def _goal_function_for_AStar(self, u, v, edge_attributes):
-        step_cost = 1
-        total_cost = (step_cost +
-                      self._cpu_penalty +
-                      self._gpu_penalty +
-                      self._normalize_time_cost(u, v))
-        return total_cost

@@ -25,8 +25,8 @@ def torch_channel_order_last_to_first(source_metadata, target_metadata):
     if (source_metadata.get('channel_order') == 'channel last' and
             target_metadata.get('channel_order') == 'channel first'):
         if source_metadata.get('minibatch_input'):
-            return "def convert(var):\n  return var.permute(0, 3, 1, 2)"
-        return "def convert(var):\n  return var.permute(2, 0, 1)"
+            return "return var.permute(0, 3, 1, 2)"
+        return "return var.permute(2, 0, 1)"
     return None
 ```
 More metadata differ functions can be found in the `metadata_differ.py`.

@@ -54,3 +54,7 @@ def is_metadata_complete(instance: dict) -> bool:
     required_keys = set(Metadata.__annotations__.keys())
     instance_keys = set(instance.keys())
     return required_keys.issubset(instance_keys)
+   
+
+def count_same(dict1: Metadata, dict2: Metadata) -> int:
+    return sum(1 for key in dict1 if dict1[key] == dict2.get(key))

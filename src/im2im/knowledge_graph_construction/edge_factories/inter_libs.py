@@ -12,7 +12,7 @@ def numpy_to_torch(source_metadata, target_metadata) -> Conversion:
     ):
         return (
             "import torch",
-            "def convert(var):\n  return torch.from_numpy(var)",
+            "return torch.from_numpy(var)",
         )
     return None
 
@@ -24,7 +24,7 @@ def torch_to_numpy(source_metadata, target_metadata) -> Conversion:
     ):
         return (
             "import torch",
-            "def convert(var):\n  return var.numpy(force=True)",
+            "return var.numpy(force=True)",
         )
     return None
 
@@ -55,7 +55,7 @@ def numpy_to_pil(source_metadata, target_metadata) -> Conversion:
     ):
         return (
             "from PIL import Image",
-            "def convert(var):\n  return Image.fromarray(var)",
+            "return Image.fromarray(var)",
         )
     return None
 
@@ -67,7 +67,7 @@ def pil_to_numpy(source_metadata, target_metadata) -> Conversion:
     ):
         return (
             "import numpy as np",
-            "def convert(var):\n  return np.array(var)",
+            "return np.array(var)",
         )
     return None
 
@@ -96,7 +96,7 @@ def tensorflow_to_numpy(source_metadata, target_metadata) -> Conversion:
             source_metadata.get("data_representation") == "tf.tensor"
             and target_metadata.get("data_representation") == "numpy.ndarray"
     ):
-        return "", "def convert(var):\n  return var.numpy()",
+        return "", "return var.numpy()",
     return None
 
 
@@ -106,7 +106,7 @@ def numpy_to_tensorflow(source_metadata, target_metadata) -> Conversion:
             and target_metadata.get("data_representation") == "tf.tensor"
 
     ):
-        return "import tensorflow as tf", f"def convert(var):\n return tf.convert_to_tensor(var)",
+        return "import tensorflow as tf", f"return tf.convert_to_tensor(var)",
 
     return None
 
@@ -137,7 +137,7 @@ def pil_to_tensorflow(source_metadata, target_metadata) -> Conversion:
     ):
         return (
             "import tensorflow as tf",
-            "def convert(var):\n  return tf.convert_to_tensor(var)",
+            "return tf.convert_to_tensor(var)",
         )
     return None
 
@@ -162,7 +162,7 @@ factories_cluster_for_pil_tensorflow: FactoriesCluster = (
 
 # https://pytorch.org/vision/master/generated/torchvision.transforms.ToPILImage.html#torchvision.transforms.ToPILImage
 # Converts a torch.*Tensor of shape C x H x W to a PIL Image while adjusting the value range depending on the mode.
-torch_to_pil = ("from torchvision.transforms import functional as F", "def convert(var):\n  return F.to_pil_image(var)")
+torch_to_pil = ("from torchvision.transforms import functional as F", "return F.to_pil_image(var)", True)
 
 factories_for_pil_torch_metadata_pair: list[ConversionForMetadataPair] = [
     # torch tensor, channel first, rgb, float32(0to1) -> PIL image, chanel last, uint8, rgb
@@ -217,7 +217,7 @@ for color_channel in ["rgb", "gray"]:
             {
                 "data_representation": "PIL.Image",
                 "color_channel": color_channel,
-                "channel_order": 'channel last',
+                "channel_order": 'channel last' if color_channel=="rgb" else 'none',
                 "minibatch_input": False,
                 "image_data_type": 'uint8',
                 "device": 'cpu',
@@ -230,6 +230,6 @@ for color_channel in ["rgb", "gray"]:
                 "image_data_type": 'float32(0to1)',
                 "device": 'cpu',
             },
-            ("from torchvision.transforms import functional as F", "def convert(var):\n  return F.to_tensor(var)")
+            ("from torchvision.transforms import functional as F", "return F.to_tensor(var)")
         )
     )

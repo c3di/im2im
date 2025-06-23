@@ -1,7 +1,7 @@
 from typing import List, Union
 
-from .find_metadata import find_target_metadata, Metadata4Library, get_preset_table, PossibleMetadata
 from .code_generator import ConvertCodeGenerator
+from .find_metadata import find_target_metadata, Metadata4Library, get_preset_table, PossibleMetadata
 from .knowledge_graph_construction import (
     get_knowledge_graph_constructor,
     MetadataValues,
@@ -37,24 +37,40 @@ class Image:
             self.metadata = config
 
 
-def im2im(source_image: Image, target_preset_path) -> Image:
-    target_metadata = find_target_metadata(source_image.metadata, target_preset_path)
+def im2im(source_image: Image, target: Union['Metadata', str], allow_lossy_fallback=True) -> Image:
+    target_metadata = find_target_metadata(source_image.metadata, target) if isinstance(target, str) else target
+    
     if source_image.metadata == target_metadata:
         return source_image
 
     raw_image = source_image.raw_image
     target_image_name = "target_image"
-    code_str = im2im_code("raw_image", source_image.metadata, target_image_name, target_metadata)
-    exec(code_str)
+    code = im2im_code("raw_image", source_image.metadata, target_image_name, target_metadata, allow_lossy_fallback)
+    exec('\n'.join(code))
     return Image(locals()[target_image_name], target_metadata)
 
 
-def im2im_code(source_var_name: str, source_metadata: Metadata, target_var_name: str, target_metadata: Metadata) -> Union[str, None]:
+def im2im_code(source_var_name: str, source_metadata: Metadata, target_var_name: str, target_metadata: Metadata,
+               allow_lossy_fallback=True) -> Union[tuple[str, str], None]:
     """
     Generates Python code as a string that performs data conversion from a source variable to a target variable based on specified preset path.
 
    """
-    return _code_generator.get_conversion(source_var_name, source_metadata, target_var_name, target_metadata)
+    return _code_generator.get_conversion(source_var_name, source_metadata, target_var_name, target_metadata,
+                                          allow_lossy_fallback)
+
+
+
+def new_cost_function_on_edge(cost_function: callable):
+    """
+    You can use this function to set a new cost function for the goal function.
+    The cost function should take two metadata, u, v, edge_attributes and return the cost.
+    By default, it returns (information loss, step cost + gpu penalty).
+    """
+    _code_generator.cost_on_edge = cost_function
+
+def new_heuristic_function(function):
+    _code_generator.huristic_function = function
 
 
 def get_possible_metadata(preset: str) -> PossibleMetadata:
@@ -63,14 +79,6 @@ def get_possible_metadata(preset: str) -> PossibleMetadata:
 
 def add_lib_metadata(lib: str, metadata: Metadata4Library):
     preset_table.add_metadata4library(lib, metadata)
-
-
-def config_astar_goal_function(cpu_penalty: float, gpu_penalty: float):
-    """
-    We use A* to find the shortest path in the knowledge graph. The goal function is only step cost by default.
-    You can use this function to set `cpu penalty`, `gpu penalty` to the goal function.
-    """
-    _code_generator.config_astar_goal_function(cpu_penalty, gpu_penalty)
 
 
 def add_meta_values_for_image(new_metadata: MetadataValues):

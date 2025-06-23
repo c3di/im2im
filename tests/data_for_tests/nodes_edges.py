@@ -46,9 +46,10 @@ new_node = {
 all_nodes = test_nodes + [new_node]
 
 test_edges = [
-    (test_nodes[0], test_nodes[1], ("", "def convert(var):\n  return var[:, :, ::-1]")),
-    (test_nodes[0], test_nodes[2], ("import torch", "def convert(var):\n  return torch.from_numpy(var)")),
-    (test_nodes[2], test_nodes[3], ("", "def convert(var):\n  return var.permute(2, 0, 1)")),
+    (test_nodes[0], test_nodes[1], ("", "return var[:, :, ::-1]", (0, 1))),
+    (test_nodes[0], test_nodes[2], ("import torch", "return torch.from_numpy(var)", (0, 1))),
+    (test_nodes[2], test_nodes[3], ("", "return var.permute(2, 0, 1)", (0, 1))),
+    (test_nodes[1], test_nodes[2], ("", "im = var[:, :, ::-1]\nreturn torch.from_numpy(im)", (0, 1)))
 ]
 
-new_edge = (test_nodes[3], new_node, ("import torch", "def convert(var):\n  return torch.unsqueeze(var, 0)"))
+new_edge = (test_nodes[3], new_node, ("import torch", "return torch.unsqueeze(var, 0)", (0, 1)))

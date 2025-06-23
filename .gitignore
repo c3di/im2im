@@ -41,7 +41,8 @@ coverage.xml
 
 # Build and docs folder/files
 build/*
-dist/*
+#dist/*
+benchmark
 sdist/*
 docs/api/*
 docs/_rst/*
@@ -60,3 +61,4 @@ knowledge_graph.json
 # Pytest
 pytest.xml
 pytest-coverage.txt
+/benchmark/

@@ -39,121 +39,143 @@ def is_metadata_valid_for_tensorflow(metadata):
 
 def can_use_factories_in_cluster(source_metadata, target_metadata):
     return (
-        are_both_same_data_repr(source_metadata, target_metadata, "tf.tensor")
-        and is_attribute_value_valid_for_tensorflow(source_metadata)
-        and is_attribute_value_valid_for_tensorflow(target_metadata)
-        and is_metadata_valid_for_tensorflow(source_metadata)
-        and is_metadata_valid_for_tensorflow(target_metadata)
+            are_both_same_data_repr(source_metadata, target_metadata, "tf.tensor")
+            and is_attribute_value_valid_for_tensorflow(source_metadata)
+            and is_attribute_value_valid_for_tensorflow(target_metadata)
+            and is_metadata_valid_for_tensorflow(source_metadata)
+            and is_metadata_valid_for_tensorflow(target_metadata)
     )
 
 
 def minibatch_true_to_false(source_metadata, target_metadata) -> Conversion:
     if source_metadata.get("minibatch_input") and not target_metadata.get(
-        "minibatch_input"
+            "minibatch_input"
     ):
         return (
             "import tensorflow as tf",
-            "def convert(var):\n  return tf.squeeze(var, 0)",
+            "return tf.squeeze(var, 0)",
+            False,
+            source_metadata.get("device") == "gpu"
         )
 
 
 def minibatch_false_to_true(source_metadata, target_metadata) -> Conversion:
     if (not source_metadata.get("minibatch_input")) and target_metadata.get(
-        "minibatch_input"
+            "minibatch_input"
     ):
         return (
             "import tensorflow as tf",
-            "def convert(var):\n  return tf.expand_dims(var, 0)",
+            "return tf.expand_dims(var, 0)",
+            False,
+            source_metadata.get("device") == "gpu"
         )
 
 
 def channel_none_to_channel_first(source_metadata, target_metadata) -> Conversion:
     if (
-        source_metadata.get("channel_order") == "none"
-        and target_metadata.get("channel_order") == "channel first"
+            source_metadata.get("channel_order") == "none"
+            and target_metadata.get("channel_order") == "channel first"
     ):
         return (
             "import tensorflow as tf",
-            "def convert(var):\n  return tf.expand_dims(var, 0)",
+            "return tf.expand_dims(var, 0)",
+            False,
+            source_metadata.get("device") == "gpu"
         )
 
 
 def channel_none_to_channel_last(source_metadata, target_metadata) -> Conversion:
     if (
-        source_metadata.get("channel_order") == "none"
-        and target_metadata.get("channel_order") == "channel last"
+            source_metadata.get("channel_order") == "none"
+            and target_metadata.get("channel_order") == "channel last"
     ):
         return (
             "import tensorflow as tf",
-            "def convert(var):\n  return tf.expand_dims(var, -1)",
+            "return tf.expand_dims(var, -1)",
+            False,
+            source_metadata.get("device") == "gpu"
         )
 
 
 def channel_last_to_none(source_metadata, target_metadata) -> Conversion:
     if (
-        source_metadata.get("channel_order") == "channel last"
-        and target_metadata.get("channel_order") == "none"
+            source_metadata.get("channel_order") == "channel last"
+            and target_metadata.get("channel_order") == "none"
     ):
         return (
             "import tensorflow as tf",
-            "def convert(var):\n  return tf.squeeze(var, -1)",
+            "return tf.squeeze(var, -1)",
+            False,
+            source_metadata.get("device") == "gpu"
         )
 
 
 def channel_first_to_none(source_metadata, target_metadata) -> Conversion:
     if (
-        source_metadata.get("channel_order") == "channel first"
-        and target_metadata.get("channel_order") == "none"
+            source_metadata.get("channel_order") == "channel first"
+            and target_metadata.get("channel_order") == "none"
     ):
         return (
             "import tensorflow as tf",
-            "def convert(var):\n  return tf.squeeze(var, 0)",
+            "return tf.squeeze(var, 0)",
+            False,
+            source_metadata.get("device") == "gpu"
         )
 
 
 def channel_last_to_channel_first(source_metadata, target_metadata) -> Conversion:
     if (
-        source_metadata.get("channel_order") == "channel last"
-        and target_metadata.get("channel_order") == "channel first"
+            source_metadata.get("channel_order") == "channel last"
+            and target_metadata.get("channel_order") == "channel first"
     ):
         if source_metadata.get("minibatch_input"):
             return (
                 "import tensorflow as tf",
-                "def convert(var):\n  return tf.transpose(var, [0, 3, 1, 2])",
+                "return tf.transpose(var, [0, 3, 1, 2])",
+                False,
+                source_metadata.get("device") == "gpu"
             )
         return (
             "import tensorflow as tf",
-            "def convert(var):\n  return tf.transpose(var, [2, 0, 1])",
+            "return tf.transpose(var, [2, 0, 1])",
+            False,
+            source_metadata.get("device") == "gpu"
         )
 
 
 def channel_first_to_channel_last(source_metadata, target_metadata) -> Conversion:
     if (
-        source_metadata.get("channel_order") == "channel first"
-        and target_metadata.get("channel_order") == "channel last"
+            source_metadata.get("channel_order") == "channel first"
+            and target_metadata.get("channel_order") == "channel last"
     ):
         if source_metadata.get("minibatch_input"):
             return (
                 "import tensorflow as tf",
-                "def convert(var):\n  return tf.transpose(var, [0, 2, 3, 1])",
+                "return tf.transpose(var, [0, 2, 3, 1])",
+                False,
+                source_metadata.get("device") == "gpu"
             )
         return (
             "import tensorflow as tf",
-            "def convert(var):\n   return tf.transpose(var, [1, 2, 0])",
+            "return tf.transpose(var, [1, 2, 0])",
+            False,
+            source_metadata.get("device") == "gpu"
         )
 
 
 def channel_last_rgb_to_gray(source_metadata, target_metadata) -> Conversion:
     # [N, H, W, 3] -> [N, H, W, 1]
     if (
-        source_metadata.get("channel_order") == "channel last"
-        and source_metadata.get("color_channel") == "rgb"
-        and target_metadata.get("color_channel") == "gray"
-        and source_metadata.get("minibatch_input")
+            source_metadata.get("channel_order") == "channel last"
+            and source_metadata.get("color_channel") == "rgb"
+            and target_metadata.get("color_channel") == "gray"
+            and source_metadata.get("minibatch_input")
     ):
         return (
             "import tensorflow as tf",
-            "def convert(var):\n  return tf.image.rgb_to_grayscale(var)",
+            "return tf.image.rgb_to_grayscale(var)",
+            True,
+            source_metadata.get("device") == "gpu"
         )
 
 
@@ -161,17 +183,39 @@ def channel_last_gray_to_rgb(source_metadata, target_metadata) -> Conversion:
     # [N, H, W, 1] -> [N, H, W, 3]
     # Outputs a tensor of the same `DType`
     if (
-        source_metadata.get("channel_order") == "channel last"
-        and source_metadata.get("color_channel") == "gray"
-        and target_metadata.get("color_channel") == "rgb"
-        # tensorflow/core/framework/local_rendezvous.cc:404] Local rendezvous is aborting with status: UNIMPLEMENTED: TileOp : The input data type is not supported, DataType : uint16, Dimension : 4
-        and source_metadata.get("image_data_type") != "uint16"
-        and source_metadata.get("minibatch_input")
+            source_metadata.get("channel_order") == "channel last"
+            and source_metadata.get("color_channel") == "gray"
+            and target_metadata.get("color_channel") == "rgb"
+            # tensorflow/core/framework/local_rendezvous.cc:404] Local rendezvous is aborting with status: UNIMPLEMENTED: TileOp : The input data type is not supported, DataType : uint16, Dimension : 4
+            and source_metadata.get("image_data_type") != "uint16"
+            and source_metadata.get("minibatch_input")
     ):
         return (
             "import tensorflow as tf",
-            "def convert(var):\n  return tf.image.grayscale_to_rgb(var)",
+            "return tf.image.grayscale_to_rgb(var)",
+            False,
+            source_metadata.get("device") == "gpu"
         )
+
+
+def is_lossy_conversion(dtype_x, dtype_y):
+    lossy_cases = {
+        "uint16": ["uint8"],
+        "uint32": ["uint8", "uint16"],
+        "uint64": ["uint8", "uint16", "uint32"],
+        # Signed integers
+        "int8": ["uint8", "uint16", "uint32", "uint64"],
+        "int16": ["uint8", "uint16", "uint32", "uint64", "int8"],
+        "int32": ["uint8", "uint16", "uint32", "uint64", "int8", "int16"],
+        "int64": ["uint8", "uint16", "uint32", "uint64", "int8", "int16", "int32"],
+        # Floating point with range [0,1)
+        "float16(0to1)": ["uint8", "uint16", "uint32", "uint64", "int8", "int16", "int32", "int64"],
+        "float32(0to1)": ["uint8", "uint16", "uint32", "uint64", "int8", "int16", "int32", "int64", "float16(0to1)"],
+        "float64(0to1)": ["uint8", "uint16", "uint32", "uint64", "int8", "int16", "int32", "int64", "float16(0to1)", "float32(0to1)"],
+        "double(0to1)": ["uint8", "uint16", "uint32", "uint64", "int8", "int16", "int32", "int64", "float16(0to1)", "float32(0to1)"]
+    }
+
+    return dtype_y in lossy_cases.get(dtype_x, [])
 
 
 def convert_image_dtype(source_metadata, target_metadata) -> Conversion:
@@ -195,7 +239,9 @@ def convert_image_dtype(source_metadata, target_metadata) -> Conversion:
         target_dtype = dtype_mapping.get(target_metadata.get("image_data_type"))
         return (
             "import tensorflow as tf",
-            f"def convert(var):\n return tf.image.convert_image_dtype(var, {target_dtype})",
+            f"return tf.image.convert_image_dtype(var, {target_dtype})",
+            is_lossy_conversion(source_metadata.get("image_data_type"), target_metadata.get("image_data_type")),
+            source_metadata.get("device") == "gpu"
         )
 
 
@@ -206,9 +252,8 @@ def gpu_to_cpu(source_metadata, target_metadata) -> Conversion:
     ):
         return (
             "import tensorflow as tf",
-            """def convert(var):
-    with tf.device('/cpu:0'):
-        return tf.identity(var)""",
+            """with tf.device('/cpu:0'):
+    return tf.identity(var)""",
         )
 
 
@@ -219,9 +264,10 @@ def cpu_to_gpu(source_metadata, target_metadata) -> Conversion:
     ):
         return (
             "import tensorflow as tf",
-            """def convert(var):
-    with tf.device('/device:GPU:0'):
-        return tf.identity(var)""",
+            """with tf.device('/device:GPU:0'):
+    return tf.identity(var)""",
+        False,
+        True
         )
     return None
 

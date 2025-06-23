@@ -1,23 +1,32 @@
-import re
 import timeit
-import math
 
 from .image_util import random_test_image_and_expected
 from src.im2im.knowledge_graph_construction import encode_metadata
+from src.im2im.util import instance_code_template
 
 
 def time_cost(source, target, conversion, test_img_size=(256, 256), repeat_count=10):
+    source_image, _ = random_test_image_and_expected(source, target, test_img_size)
+
+    if(source_image is None):
+        return float('inf')
+    
+    code = instance_code_template(conversion[1], "source_image", "target_image")
+    globals_ = {
+        'source_image': source_image,
+    }
+
+    if 'source_image' not in globals_ or globals_['source_image'] is None:
+        raise ValueError("source_image is not properly initialized")
+
     try:
-        source_image, _ = random_test_image_and_expected(source, target, test_img_size)
+        execution_time = timeit.timeit(stmt=code, setup=f"{conversion[0]}", number=repeat_count, globals=globals_)
     except Exception as e:
-        return math.inf
-    setup = f"{conversion[0]}\n{conversion[1]}"
-    func_name = re.search(r'(?<=def )\w+', conversion[1]).group(0)
-    code = f"actual_image = {func_name}(source_image)"
-    try:
-        execution_time = timeit.timeit(stmt=code, setup=setup, number=repeat_count, globals=locals())
-    except Exception as e:
-        raise RuntimeError(f'{e}, \ncode is {code}\nsetup is {setup}')
+        raise RuntimeError(
+            f"Error: {e}\n"
+            f"Code: {code}\n"
+            f"Setup: {conversion[0]}"
+        )
     return execution_time / repeat_count
 
 
