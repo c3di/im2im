@@ -21,11 +21,12 @@ Install the package via pip:
 pip install im2im
 ```
 
-Or download the package from the "dist" folder and installing it using the following command:
+Or install the package directly from GitHub:
 
 ```python
-pip install /path_to/im2im-0.0.5-py3-none-any.whl
+pip install git+https://github.com/c3di/im2im.git
 ```
+
 
 ### Usage for Auto Type Conversion
 
@@ -89,7 +90,7 @@ For additional implementation examples, see the `comparative_analysis/1/enhanced
 
 
 
-**Note:** For detailed comparisons between visual programming systems (**visual interface and execution**) with and without `im2im`, refer to the following studies: [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1E0Sgrb2CrUkoXVv9bcUWvnbLNJ5i-DF4?usp=sharing), [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1ILMiCqwrJ-zRHzDp0e3IL7fOcvamrGYS?usp=sharing).
+**Note:** For detailed comparisons between visual programming systems (**visual interface and execution**) with and without `im2im`, refer to the following studies: [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1cf5M1gOMdMXaRIKsCYalVj99RzMYSy8C?usp=sharing), [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1qPPL-IvovlhdKv-_0SjADBSOc60SPZDT?usp=sharing).
 
 ## Contribution
 
