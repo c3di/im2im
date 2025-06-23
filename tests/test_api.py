@@ -27,10 +27,10 @@ def test_get_conversion_code():
     target = find_target_metadata(source, "torch.gpu")
 
     actual_code = im2im_code("source_image", source, "target_image", target)
-    expected_code = ('import numpy as np\nimport torch',
-                     'image = source_image.transpose(2, 0, 1)\n'
-                     'image = image[np.newaxis, ...]\n'
-                     'image = torch.from_numpy(image)\n'
+    expected_code = ('import torch',
+                     'image = torch.from_numpy(source_image)\n'
+                     'image = image.permute(2, 0, 1)\n'
+                     'image = image.unsqueeze(0)\n'
                      'target_image = image.cuda()')
 
     assert actual_code == expected_code

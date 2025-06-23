@@ -2,7 +2,16 @@ from typing import Union
 
 from .knowledge_graph_construction import Metadata, encode_metadata
 from .util import instance_code_template
-from .impl_c import attribute_diff_count
+
+def attribute_diff_count(u: str, v: str) -> int:
+    s1 = u.split('.')
+    s2 = v.split('.')
+    counter = 0
+    for a, b in zip(s1, s2):
+        if a != b:
+            counter += 1
+    return counter
+
 
 def huristic_function(u, v):
     return (0, attribute_diff_count(u, v))

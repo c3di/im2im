@@ -13,15 +13,17 @@ def random_test_image_and_expected(source_metadata, target_metadata, size=(256, 
         g = np.random.randint(0, 256, size=(h, w), dtype=np.uint8)
         b = np.random.randint(0, 256, size=(h, w), dtype=np.uint8)
         return r, g, b
-    r_g_b = get_r_g_b(*size)
-    src_img = get_test_images(r_g_b, source_metadata)[0]
-    return src_img, get_test_images(r_g_b, target_metadata)[0]
-    # if source_metadata["data_representation"] == target_metadata["data_representation"]:
-    #     return get_test_images(get_r_g_b(*size), source_metadata, target_metadata)
-    # else:
-    #     src_img = get_test_images(get_r_g_b(*size), source_metadata)[0]
-    #     return src_img, get_test_images(get_r_g_b(*size), target_metadata)[0]
-    #     return src_img, convert_to_another_repr(source_metadata, src_img, target_metadata)
+    # r_g_b = get_r_g_b(*size)
+    # src_img = get_test_images(r_g_b, source_metadata)[0]
+    # return src_img, get_test_images(r_g_b, target_metadata)[0]
+    if "data_representation" not in source_metadata or "data_representation" not in target_metadata:
+        return None, None
+    if source_metadata["data_representation"] == target_metadata["data_representation"]:
+        return get_test_images(get_r_g_b(*size), source_metadata, target_metadata)
+    else:
+        src_img = get_test_images(get_r_g_b(*size), source_metadata)[0]
+        # return src_img, get_test_images(get_r_g_b(*size), target_metadata)[0]
+        return src_img, convert_to_another_repr(source_metadata, src_img, target_metadata)
 
 
 def convert_to_another_repr(source_metadata, src_img, target_metadata):
