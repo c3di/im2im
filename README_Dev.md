@@ -2,7 +2,9 @@
 ## Setup Dev Environment
 **Clone the Repository**
 
-For anonymized review, please download from https://anonymous.4open.science/r/im2im-62BB
+```bash
+git clone git@github.com:c3di/im2im.git
+```
 
 **Installing Dependencies**
 
