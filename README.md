@@ -44,7 +44,8 @@ converted: Image = im2im(to_be_converted, "torch.gpu")
 
 Metadata presets are defined in `src/im2im/find_metadata_builtin_preset.py`. 
 
-For additional APIs such as `im2im_code`, please refer to `src/im2im/api.py`. 
+For additional APIs such as `im2im_code` and add new preset, please refer to `src/im2im/api.py`. 
+
 
 
 
