@@ -5,6 +5,7 @@ import torch
 from PIL import Image
 from torchvision.transforms import functional as V1F
 from torchvision.transforms.v2 import functional as V2F
+import os
 
 
 def random_test_image_and_expected(source_metadata, target_metadata, size=(256, 256)):
@@ -414,3 +415,31 @@ def is_image_equal(image1, image2, tolerance=1):
     except Exception:
         pass
     return False
+
+
+def load_kodim15_test_image_and_expected(source_metadata, target_metadata):
+    """Load kodim15.png image and convert it to source and target formats"""
+    # Get the path to kodim15.png
+    test_data_dir = os.path.join(os.path.dirname(__file__), 'data_for_tests')
+    kodim15_path = os.path.join(test_data_dir, 'kodim15.png')
+    
+    if not os.path.exists(kodim15_path):
+        raise FileNotFoundError(f"kodim15.png not found at {kodim15_path}")
+    
+    # Load the image using PIL
+    pil_image = Image.open(kodim15_path).convert('RGB')
+    
+    # Convert PIL image to numpy array (H, W, 3) uint8 channel last
+    image_array = np.array(pil_image)
+    
+    # Convert to channel first format (3, H, W) for compatibility with existing functions
+    r_g_b = (image_array[:, :, 0], image_array[:, :, 1], image_array[:, :, 2])
+    
+    if "data_representation" not in source_metadata or "data_representation" not in target_metadata:
+        return None, None
+    
+    if source_metadata["data_representation"] == target_metadata["data_representation"]:
+        return get_test_images(r_g_b, source_metadata, target_metadata)
+    else:
+        src_img = get_test_images(r_g_b, source_metadata)[0]
+        return src_img, convert_to_another_repr(source_metadata, src_img, target_metadata)
