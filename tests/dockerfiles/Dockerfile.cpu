@@ -1,0 +1,26 @@
+# Run unit tests in a CPU-only environment.
+# The unit tests required GPU will be skipped.
+# Test on Ubuntu 22.04.5 LTS
+
+FROM python:3.11-slim AS builder
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        git \
+        libgl1-mesa-glx \
+        libglib2.0-0 \
+        libsm6 \
+        libxext6 \
+        libxrender-dev \
+        libgomp1 && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY requirements_cpu.txt .
+RUN pip install --no-cache-dir -r requirements_cpu.txt \
+    && pip install --no-cache-dir pytest
+
+
+COPY . .
+CMD ["pytest", "tests/", "--maxfail=1", "--disable-warnings", "-q"]

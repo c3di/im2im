@@ -1,0 +1,19 @@
+# Run unit tests in a GPU environment.
+# Test on Ubuntu 24 LTS
+
+FROM nvidia/cuda:12.1.1-cudnn8-devel-ubuntu22.04 AS builder
+
+WORKDIR /app
+
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+      python3.11 python3.11-venv python3-pip build-essential git && \
+    ln -sf /usr/bin/python3.11 /usr/bin/python && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY requirements_gpu.txt .
+RUN pip install --no-cache-dir -r requirements_gpu.txt \
+    && pip install --no-cache-dir pytest
+
+COPY . .
+CMD ["pytest", "tests/", "--maxfail=1", "-W", "ignore", "-q"]
