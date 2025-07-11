@@ -23,8 +23,14 @@ Blockly.Python.forBlock['gaussian_blur'] = function (block) {
 
 **With `im2im`** for automatic type conversion:
 
-* Call `im2im()` with a metadata preset (e.g., `'skimage.before_gaussian'`) to convert the input to the image format required by the `gaussian` operation.
-* After the operation, wrap the output in an `Image` instance, providing the appropriate metadata (see `convert_back` below).
+* install the im2im in the execution component of visual programming systems.
+
+* add the im2im config for each operation (one block in the VPL). 
+
+  * Call `im2im()` with a metadata preset (e.g., `'skimage.before_gaussian'`) to convert the input to the image format required by the `gaussian` operation.
+
+  * After the operation, wrap the output in an `Image` instance, providing the appropriate metadata (see `convert_back` below).
+
 
 ```javascript
 Blockly.Python.forBlock['gaussian_blur'] = function (block) {
@@ -40,8 +46,8 @@ Blockly.Python.forBlock['gaussian_blur'] = function (block) {
 
 For additional implementation examples, see:
 
-* `comparative_analysis/1/enhanced_VPL4IP.html`
-* `comparative_analysis/2/enhanced_VPL4IP.html`
+* source code `comparative_analysis/1/enhanced_VPL4IP.html` and deployed on CoLab [comparative_analysis_1.ipynb - Colab](https://colab.research.google.com/drive/1cf5M1gOMdMXaRIKsCYalVj99RzMYSy8C?usp=sharing) .
+* source code `comparative_analysis/2/enhanced_VPL4IP.html` and deployed on CoLab [comparative_analysis_2.ipynb - Colab](https://colab.research.google.com/drive/1qPPL-IvovlhdKv-_0SjADBSOc60SPZDT?usp=sharing) .
 
 ---
 
