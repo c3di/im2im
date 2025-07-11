@@ -62,8 +62,36 @@ sudo docker run feichen999/im2im_unit_tests_cpu
 
 Docker will pull the image from Docker hub and run locally. **NOTE: Unit tests required GPU will be skipped  in a CPU-only environment.**
 
-
 ### GPU Environment
+
+1. install [NVIDIA Container Toolkit — NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
+
+You can use the following command to test if the NVIDIA Container Toolkit installed and configured properly. If yes, you will see a table include GPU device. 
+
+```bash
+docker run --rm --runtime=nvidia nvidia/cuda:12.4.1-base-ubuntu22.04 nvidia-smi
+```
+
+If not, verify NVIDIA runtime is available to Docker
+
+```bash
+docker info | grep -i runtime
+```
+
+You should see something like:
+
+```bash
+Runtimes: runc nvidia
+Default Runtime: runc
+```
+If nvidia is missing, the toolkit isn't correctly installed or integrated. Enable NVIDIA runtime in Docker and restart docker
+```
+sudo nvidia-ctk runtime configure --runtime=docker
+```
+```
+sudo systemctl restart docker
+```
+2. Run unit tests
 
 ```bash
 sudo docker run --rm --gpus all feichen999/im2im_unit_tests_gpu
