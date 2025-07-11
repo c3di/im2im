@@ -93,6 +93,11 @@ For additional implementation examples, see the `comparative_analysis/1/enhanced
 
 **Note:** For detailed comparisons between visual programming systems (**visual interface and execution**) with and without `im2im`, refer to the following studies: [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1cf5M1gOMdMXaRIKsCYalVj99RzMYSy8C?usp=sharing), [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1qPPL-IvovlhdKv-_0SjADBSOc60SPZDT?usp=sharing).
 
+
+
+## Document
+For detailed APIs and usage, please refer to docs folder.
+
 ## Contribution
 
 We welcome all contributions to this project! If you have suggestions, feature requests, or want to contribute in any other way, please feel free to open an issue or submit a pull request. For detailed instructions on developing, building, and publishing this package, please refer to the [README_DEV](https://github.com/c3di/im2im/blob/main/README_Dev.md).
