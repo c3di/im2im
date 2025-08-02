@@ -9,6 +9,8 @@
 
 The `im2im` python package provides an automated approach for converting in-memory image representations across a variety of image processing libraries, including `scikit-image`, `opencv-python`, `scipy`, `PIL`, `numpy`, `PyTorch`, and `Tensorflow`. It handles the nuances inherent to each library's image representation, such as data formats (numpy arrays, PIL images, torch tensors, and so on), color channel (RGB or grayscale), channel order (channel first or last or none), device (CPU/GPU), and pixel intensity ranges.
 
+`im2im` uses the **A\* graph search** algorithm to compute the **smallest cost conversion** path between image metadata. Each edge in the graph is assigned a cost tuple: (information loss, constraint score). The total cost of a path is evaluated lexicographically to prioritize minimal information loss. This ensures that the selected conversion is both functionally correct and optimal in preserving data integrity. You can find the A* implementation and cost evaluation logic [here](https://github.com/c3di/im2im/blob/baa904f9f6fa046a4e5dd968bd3a9fcb703624c3/src/im2im/knowledge_graph_construction/knowledge_graph.py#L63-L101).
+
 ## Usage
 
 `im2im` is developed to simplify image type conversions in **Visual Programming Systems (VPS)** for image processing. It removes the need for manual conversion steps, significantly improving accessibility—especially for non-expert users.
@@ -92,8 +94,6 @@ For additional implementation examples, see the `comparative_analysis/1/enhanced
 
 
 **Note:** For detailed comparisons between visual programming systems (**visual interface and execution**) with and without `im2im`, refer to the following studies: [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1cf5M1gOMdMXaRIKsCYalVj99RzMYSy8C?usp=sharing), [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1qPPL-IvovlhdKv-_0SjADBSOc60SPZDT?usp=sharing).
-
-
 
 ## Document
 For detailed APIs and usage, please refer to docs folder.
