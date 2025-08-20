@@ -88,12 +88,15 @@ Blockly.Python.forBlock['gaussian_blur'] = function (block) {
   // outputs as above...
 };
 ```
+**Note:** Preset strings are used to instantiate an `Image`.
 
-For additional implementation examples, see the `comparative_analysis/1/enhanced_VPL4IP.html` and `comparative_analysis/2/enhanced_VPL4IP.html` .
+**Note:** If you want to display the conversion result, Please use `raw_image` of `Image`. 
 
-
+**Note:** For additional implementation examples, see the `comparative_analysis/1/enhanced_VPL4IP.html` and `comparative_analysis/2/enhanced_VPL4IP.html` .
 
 **Note:** For detailed comparisons between visual programming systems (**visual interface and execution**) with and without `im2im`, refer to the following studies: [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1cf5M1gOMdMXaRIKsCYalVj99RzMYSy8C?usp=sharing), [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1qPPL-IvovlhdKv-_0SjADBSOc60SPZDT?usp=sharing).
+
+
 
 ## Document
 For detailed APIs and usage, please refer to docs folder.
