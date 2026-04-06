@@ -1,11 +1,24 @@
-# im2im: Automatically Converting In-Memory Image Representations
----
+<h1 align="center">im2im</h1>
 
-[![PyPI - Version](https://img.shields.io/pypi/v/im2im.svg)](https://pypi.org/project/im2im/)
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/im2im)](https://pypi.org/project/im2im/)
-[![Downloads](https://static.pepy.tech/badge/im2im)](https://pepy.tech/project/im2im)
-[![Tests](https://github.com/c3di/im2im/actions/workflows/python%20tests%20with%20coverage.yml/badge.svg)](https://github.com/c3di/im2im/actions/workflows/python%20tests%20with%20coverage.yml)
-[![codecov](https://codecov.io/github/c3di/im2im/graph/badge.svg?token=BWBXANX8W7)](https://codecov.io/github/c3di/im2im)
+<p align="center">
+  <a href="https://pypi.org/project/im2im/">
+    <img src="https://img.shields.io/pypi/v/im2im.svg" alt="PyPI - Version">
+  </a>
+  <a href="https://pypi.org/project/im2im/">
+    <img src="https://img.shields.io/pypi/pyversions/im2im" alt="PyPI - Python Version">
+  </a>
+  <a href="https://pepy.tech/project/im2im">
+    <img src="https://static.pepy.tech/badge/im2im" alt="Downloads">
+  </a>
+  <a href="https://github.com/c3di/im2im/actions/workflows/python%20tests%20with%20coverage.yml">
+    <img src="https://github.com/c3di/im2im/actions/workflows/python%20tests%20with%20coverage.yml/badge.svg" alt="Tests">
+  </a>
+  <a href="https://codecov.io/github/c3di/im2im">
+    <img src="https://codecov.io/github/c3di/im2im/graph/badge.svg?token=BWBXANX8W7" alt="codecov">
+  </a>
+</p>
+
+---
 
 The `im2im` python package provides an automated approach for converting in-memory image representations across a variety of image processing libraries, including `scikit-image`, `opencv-python`, `scipy`, `PIL`, `numpy`, `PyTorch`, and `Tensorflow`. It handles the nuances inherent to each library's image representation, such as data formats (numpy arrays, PIL images, torch tensors, and so on), color channel (RGB or grayscale), channel order (channel first or last or none), device (CPU/GPU), and pixel intensity ranges.
 
